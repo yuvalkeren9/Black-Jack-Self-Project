@@ -3,4 +3,12 @@ project(cardgame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cardgame main.cpp)
+add_executable(cardgame main.cpp card.cpp card.h NumiricalCard.cpp NumiricalCard.h RoyaltyCard.cpp RoyaltyCard.h AceCard.cpp AceCard.h System.cpp System.h)
+
+set(SFML_STATIC_LIBRARIES TRUE)
+set(SFML_DIR C:/Program Files/SFML/lib/cmake/SFML)
+find_package(SFML 2.5.1 COMPONENTS system window graphics audio network REQUIRED)
+
+include_directories(C:/Program Files/SFML/include)
+target_link_libraries(cardgame sfml-system sfml-window sfml-graphics sfml-audio)
+
