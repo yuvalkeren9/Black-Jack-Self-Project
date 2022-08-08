@@ -1,14 +1,13 @@
 #include <iostream>
-#include "card.h"
+#include "Cards/card.h"
 #include "System.h"
 #include <SFML/Graphics.hpp>
 
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    Card card(5, Diamonds);
-    System s(createCardDeck(1));
-    s.printCards();
+    System s(createRegularCardDeck(1), 2);
+    s.printPlayerHands();
+//    s.printCards();
 //    sf::RenderWindow window(sf::VideoMode(640, 480), "BlackJack game");
 //    sf::CircleShape shape;
 //    shape.setRadius(40.f);

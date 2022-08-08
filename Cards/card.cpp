@@ -39,3 +39,7 @@ void Card::print(std::ostream& os) const{
     os << "The value of the card is:" << this->value <<std::endl;
 }
 
+int Card::getValue() const {
+    return value;
+}
+

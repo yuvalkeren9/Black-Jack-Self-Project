@@ -3,7 +3,7 @@ project(cardgame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cardgame main.cpp card.cpp card.h NumiricalCard.cpp NumiricalCard.h RoyaltyCard.cpp RoyaltyCard.h AceCard.cpp AceCard.h System.cpp System.h)
+add_executable(cardgame main.cpp Cards/card.cpp Cards/card.h Cards/RoyaltyCard.cpp Cards/RoyaltyCard.h Cards/AceCard.cpp Cards/AceCard.h System.cpp System.h Players/Player.cpp Players/Player.h Players/RealPlayer.cpp Players/RealPlayer.h Players/AIPlayer.cpp Players/AIPlayer.h)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR C:/Program Files/SFML/lib/cmake/SFML)
