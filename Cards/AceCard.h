@@ -9,13 +9,14 @@
 
 class AceCard : public Card {
 private:
-    bool is1;
+    bool is11;
 
 
 public:
-    explicit AceCard(const CardShape& cardShape) : Card(1, cardShape), is1(true) {};
+    explicit AceCard(const CardShape& cardShape) : Card(11, cardShape), is11(true) {};
     void changeAceValue();
 };
+
 
 
 #endif //CARDGAME_ACECARD_H

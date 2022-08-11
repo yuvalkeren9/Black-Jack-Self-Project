@@ -8,7 +8,7 @@
 
 #include "../Cards/card.h"
 
-
+enum Action {Hit, Stand};
 class Player {
 private:
     std::vector<Card*> m_playerHand;
@@ -17,21 +17,28 @@ private:
 
 
 public:
-//    virtual void makeMove() = 0;
     explicit Player(std::string name, long int startingMoney = 1000) : m_playerHand(), m_name(std::move(name)), m_money(startingMoney) {};
     virtual ~Player() = default;
     void addToDeck(Card* newCard);
-    long int getCurrentHandSum();
+    int getCurrentHandSum() const;
     void print() const;
     void printHand() const;
 
+    void updateAces();
+    std::string getName() const;
 
+
+
+    virtual Action chooseAction() const = 0;
     /** Game Moves */
     void hit(Card* newCard);
     void changeAceFromOneToEleven();
     void changeAceFromElevenToOne();
 
+
+
 };
 
+std::ostream& operator<<(std::ostream& os, const Player& player);
 
 #endif //MAIN_CPP_PLAYER_H

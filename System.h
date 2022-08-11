@@ -12,27 +12,47 @@
 #include <memory>
 #include <utility>
 #include "Players/Player.h"
-
+#include "Players/AIPlayer.h"
 
 
 class System {
 private:
-    std::vector<std::unique_ptr<Card>> cardDeck;
+    /** class members */
+    std::queue<std::unique_ptr<Card>> cardDeck;
     std::vector<std::unique_ptr<Player>> PlayersVector;
-    std::vector<Card*> dealerHand;
-public:
-//    void printCards() const{
-//        for(const std::unique_ptr<Card>& cards : cardDeck){
-//            cards->print(std::cout);
-//        }
-//    }
-    /** Constructor for the System class. Doesn't create its own deck so that any sort of and amount of cards can be played. */
-    explicit System(std::vector<std::unique_ptr<Card>> deck, int numOfPlayers);
+    AIPlayer dealer;
+    const static int blackJackWinnerNum = 21;
+
+    /**class member functions */
+    void moveFirstCardToEndOfDeck();
     void dealStartingCards();
 
+    bool checkPlayerForNaturalBlackJack(Player *&player);
+    bool checkDealerForNaturalBlackJack ();
+
+
+    void hitAPlayer(Player* player);
+    bool makeMove(Player* player);
+    void playDealerTurn();
+
+
+    void playResults();
+    void endOfRoundDealerBust();
+    void endOfRoundPlayerBust(const std::string& playerName);
 
 
 
+
+
+        public:
+
+    /** Constructor for the System class. Doesn't create its own deck so that any sort of and amount of cards can be played. */
+    explicit System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers);
+
+
+
+//Is a private function, only here for testing (make it private when you finish)
+    void playRound();
 
     //for testing
     void printPlayerHands() const;
@@ -46,7 +66,7 @@ public:
  * @param numOfDecks - how many "regular" decks to be created in the deck (some casinos play BlackJack with 3 decks)
  * @return shuffled card deck
  */
-std::vector<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
+std::queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
 
 
 #endif //CARDGAME_SYSTEM_H

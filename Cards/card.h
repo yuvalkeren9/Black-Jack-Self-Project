@@ -10,7 +10,7 @@
 #include <memory>
 
 
-enum CardShape {Clubs, Diamonds, Hearts, Spades };
+enum CardShape {Clubs, Diamonds, Hearts, Spades};
 
 class Card {
 private:

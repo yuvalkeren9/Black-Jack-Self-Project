@@ -11,16 +11,42 @@ void Player::addToDeck(Card* newCard) {
     this->m_playerHand.push_back(newCard);
 }
 
-long int Player::getCurrentHandSum() {
-    long int sum =0;
+void Player::updateAces() {
+    //TODO: find everywhere this static int is and make it a single one for all
+    const static int sizeOfHigherValueAce = 11;
+    int sum =0;
+    /** first we calculate al the cards that are not aces. Then, we calculate the different possibilities that the aces raise */
+    for (const auto& card : this->m_playerHand ){
+        int currentValue = card->getValue();
+        if (currentValue == sizeOfHigherValueAce)
+            continue;
+        sum += currentValue;
+    }
+    for (const auto& card : this->m_playerHand ){
+        int currentValue = card->getValue();
+        if (currentValue == sizeOfHigherValueAce){
+            if(sum + currentValue > 21) {
+                changeAceFromElevenToOne();
+                sum += 1;
+            }
+            else
+                sum += 11;
+        }
+    }
+}
+
+int Player::getCurrentHandSum() const {
+    int sum = 0;
     for (const auto& card : this->m_playerHand ){
         sum += card->getValue();
     }
     return sum;
 }
 
+
 void Player::hit(Card* newCard) {
     addToDeck(newCard);
+    updateAces();
 }
 
 void Player::changeAceFromOneToEleven() {
@@ -44,11 +70,21 @@ void Player::changeAceFromElevenToOne() {
 }
 
 void Player::print() const {
-    std::cout << this->m_name << std::endl;
+    std::cout << this->m_name;
 }
 
 void Player::printHand() const {
     for(const auto& card : this->m_playerHand){
         card->print(std::cout);
     }
+}
+
+std::string Player::getName() const {
+    return m_name;
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Player& player){
+    player.print();
+    return os;
 }

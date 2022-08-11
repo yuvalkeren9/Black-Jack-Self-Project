@@ -3,3 +3,11 @@
 //
 
 #include "AIPlayer.h"
+
+
+Action AIPlayer::chooseAction() const {
+    if (this->getCurrentHandSum() < 16)
+        return Hit;
+    else
+        return Stand;
+}

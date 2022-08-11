@@ -16,6 +16,7 @@ private:
 
 public:
     explicit RealPlayer(std::string name, long int startingMoney = 1000) : Player(std::move(name)){};
+    Action chooseAction() const override;
 
 
 };

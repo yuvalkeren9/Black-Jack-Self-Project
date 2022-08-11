@@ -10,11 +10,11 @@ void AceCard::changeAceValue() {
     assert(this->getValue() == 1 || this->getValue() == 11);
     switch(getValue()){
         case 1:
-            is1 = false;
+            is11 = true;
             value = 11;
             break;
         case 11:
-            is1 = true;
+            is11 = false;
             value =1;
             break;
         default:
@@ -22,3 +22,4 @@ void AceCard::changeAceValue() {
             break;
     }
 }
+
