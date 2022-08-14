@@ -13,6 +13,7 @@
 #include <utility>
 #include "Players/Player.h"
 #include "Players/AIPlayer.h"
+#include "Bank/Bank.h"
 
 
 class System {
@@ -21,7 +22,11 @@ private:
     std::queue<std::unique_ptr<Card>> cardDeck;
     std::vector<std::unique_ptr<Player>> PlayersVector;
     AIPlayer dealer;
+    Bank bank;
+    std::unordered_map<std::string, int> currentRoundBetsMap;
     const static int blackJackWinnerNum = 21;
+    const static int startingBet = 100;
+    enum BetType  {regular, naturalBlackjack, tie};
 
     /**class member functions */
     void moveFirstCardToEndOfDeck();
@@ -36,9 +41,22 @@ private:
     void playDealerTurn();
 
 
+    void createPlayers(int numOfPlayers);
+    void createRealPlayer();
+    void createAIPlayers(int numOfPlayers);
+
+
     void playResults();
     void endOfRoundDealerBust();
     void endOfRoundPlayerBust(const std::string& playerName);
+
+
+    void endRound();
+
+
+    void addPlayersToBank();
+    void collectStartingBets();
+    void processBet(const std::string& playerName, BetType betType);
 
 
 
@@ -56,6 +74,7 @@ private:
 
     //for testing
     void printPlayerHands() const;
+    void printBankDetails() const;
 
 };
 

@@ -23,7 +23,7 @@ using namespace std;
 queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     static int smallestCardValue = 2;
     static int largestCardValue = 10;
-    static int diffrentCardTypes = 4;
+    static int differentCardTypes = 4;
 
     vector<unique_ptr<Card>> tempVector;
     queue<unique_ptr<Card>> tempQueue;
@@ -31,12 +31,12 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     assert(numOfDecks > 0);
     for (int i=0; i < numOfDecks; ++i){                 //creating the 2-10 regular cards
         for(int j=smallestCardValue; j <= largestCardValue; ++j){
-            for (int p = 1; p <= diffrentCardTypes; ++p) {
+            for (int p = 1; p <= differentCardTypes; ++p) {
                 tempVector.push_back(make_unique<Card> (j, intToCardTypeAdapter(p)));
             }
         }               //the royal house is seperated from the regular cards because I wanted to experiment with make unique
 
-        for (int p = 1; p <= diffrentCardTypes; ++p) {
+        for (int p = 1; p <= differentCardTypes; ++p) {
             tempVector.push_back(unique_ptr<Card> (new RoyaltyCard(intToCardTypeAdapter(p), Jack)));
             tempVector.push_back(unique_ptr<Card> (new RoyaltyCard(intToCardTypeAdapter(p), Queen)));
             tempVector.push_back(unique_ptr<Card> (new RoyaltyCard(intToCardTypeAdapter(p), King)));
@@ -52,22 +52,18 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
 }
 
 System::System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer") {
-    //TODO: make a function that does this, that creates names for AI and lets user select his name
-    PlayersVector.push_back(unique_ptr<Player> (new RealPlayer("Aang")));
-    for (int i=1 ; i < numOfPlayers; ++i){
-        PlayersVector.push_back(unique_ptr<Player> (new AIPlayer("Azula")));
-    }
-    dealStartingCards();
+    createPlayers(numOfPlayers);
+    addPlayersToBank();
 }
 
 void System::printPlayerHands() const {
     for(const auto& player : this->PlayersVector){
         cout << "Player: " << *player << endl;
-        player->printHand();
+        //player->printHand();
         cout << "The sum of the player is:" << player->getCurrentHandSum() << endl << endl;
     }
     cout << "Player: " << dealer << endl;
-    dealer.printHand();
+    //dealer.printHand();
     cout << "The sum of the dealer is:" << dealer.getCurrentHandSum() << endl << endl;
 }
 
@@ -80,8 +76,10 @@ void System::dealStartingCards() {
     }
     for (int i =0; i < numOfStartingCards; ++i){
         //TODO: hit dealer function to replace following code
-        dealer.hit(this->cardDeck.front().get());
-        moveFirstCardToEndOfDeck();
+        Player* tempDealerPtr = &dealer;
+        hitAPlayer(tempDealerPtr);
+//        dealer.hit(this->cardDeck.front().get());
+//        moveFirstCardToEndOfDeck();
     }
 
 }
@@ -93,6 +91,10 @@ void System::moveFirstCardToEndOfDeck() {
 }
 
 void System::playRound() {
+    dealStartingCards();
+    printPlayerHands();
+    collectStartingBets();
+    printBankDetails();
     if(checkDealerForNaturalBlackJack()){
         return;
     }
@@ -101,11 +103,12 @@ void System::playRound() {
     }
     playDealerTurn();
     playResults();
+    endRound();
 }
 
 bool System::checkPlayerForNaturalBlackJack(Player *&player) {
     if(player->getCurrentHandSum() == blackJackWinnerNum){
-        //TODO : exit round, win 1.5 money
+        processBet(player->getName(), naturalBlackjack);
         cout << "Player" << *player << "has a Natural BlackJack!" << endl;
         return true;
     }
@@ -115,7 +118,6 @@ bool System::checkPlayerForNaturalBlackJack(Player *&player) {
 bool System::checkDealerForNaturalBlackJack() {
     if(dealer.getCurrentHandSum() == blackJackWinnerNum){
         cout << "Player" << dealer << "has a BlackJack!" << endl;
-        //TODO: make everybody lose money, end round
         return true;
     }
     else {
@@ -150,9 +152,8 @@ bool System::makeMove(Player* player){
                 cout<< "the following player decided to stand" << *player << endl;
                 return false;
             default:
-                cout << " shit man something has gone way way wrong";
-                //TODO : crash the program
-                return false;
+                cout << "shit man something has gone way way wrong";
+                exit(0);
         }
 }
 
@@ -171,42 +172,125 @@ void System::playResults() {
         return;
     }
     for (auto& player : this->PlayersVector){
+        const string currentPlayerName = player->getName();
         int currentPlayerSum = player->getCurrentHandSum();
         if(currentPlayerSum > blackJackWinnerNum) {
-            endOfRoundPlayerBust(player->getName());
+            endOfRoundPlayerBust(currentPlayerName);
             continue;
         }
         if (dealerSum == currentPlayerSum ){
-            //TODO : return bet sum, nothing happens
+            processBet(currentPlayerName, tie);
             cout << "Player " << *player << " is tied with the dealer!" << endl;
             continue;
         }
         if (dealerSum > currentPlayerSum){
-            //TODO: make player lose bet
             cout << "Player " << *player << " has lost to the dealer!" << endl;
             continue;
         }
         else{                                     //player's sum is higher than dealer's
-            //TODO: have player win money
+            processBet(currentPlayerName, regular);
             cout << "Player " << *player << " beat the dealer!" << endl;
             continue;
         }
     }
 }
 
+/** Bank related functions */
+void System::addPlayersToBank(){
+    for (const auto& player : PlayersVector){
+        bank.addPlayerToBank(player->getName());
+    }
+}
+
+void System::collectStartingBets() {
+    for (auto& player : PlayersVector){
+        int currentPlayersMoney = bank.getPlayersMoney(player->getName());
+        const string currentPlayerName = player->getName();
+        assert(currentPlayersMoney != 0);
+        if(currentPlayersMoney < startingBet){
+            currentRoundBetsMap[currentPlayerName] = currentPlayersMoney;
+            bank.decreaseMoney(currentPlayerName, currentPlayersMoney);
+        }
+        else{
+            currentRoundBetsMap[currentPlayerName] = startingBet;
+            bank.decreaseMoney(currentPlayerName, startingBet);
+        }
+    }
+}
+
+void System::processBet(const string& playerName, BetType betType ){
+    int originalBet = currentRoundBetsMap.at(playerName);
+    switch (static_cast<int> (betType)){
+        case 0:                                                            //regular win
+            bank.addMoney(playerName, 2*originalBet);
+            return;
+        case 1:
+            bank.addMoney(playerName, 1.5*originalBet);         //naturalBlackJack win
+            return;
+        case 2:
+            bank.addMoney(playerName, originalBet);                        //tie with the dealer
+        default:
+            cout << "BAD BAD BAD" <<endl;
+            exit(0);
+            return;
+    }
+}
+
+
+
+
+
+
 
 /** dealer related functions */
 void System::endOfRoundDealerBust(){
+    cout << "The dealer has busted! All players who do not have a bust themselves win!" << endl;
     for (auto& player : this->PlayersVector){
         if(player->getCurrentHandSum() <= blackJackWinnerNum){ //player did not bust
-            //TODO: add moneyyyy
+            processBet(player->getName(), regular);
         }
     }
 }
 
 void System::endOfRoundPlayerBust(const string& playerName) {
     cout << playerName << " has a bust! He loses" << endl;
-    //TODO: make player lose money
+}
+
+void System::printBankDetails() const {
+    bank.printDetails();
+}
+
+void System::endRound() {
+    printPlayerHands();
+    printBankDetails();
+    for (auto& player : PlayersVector){            //empty players card deck
+        player->emptyDeck();
+    }
+    dealer.emptyDeck();                            //empty dealer card deck
+}
+
+void System::createPlayers(int numOfPlayers) {
+    createRealPlayer();
+    createAIPlayers(numOfPlayers);
 
 }
+
+void System::createRealPlayer() {
+    cout << "Please select a name:" <<endl;
+    string inputFromUser;
+    getline(cin, inputFromUser);
+    PlayersVector.push_back(unique_ptr<Player> (new RealPlayer(inputFromUser)));
+    cout << endl;
+}
+
+void System::createAIPlayers(int numOfPlayers) {
+    vector<string> vectorOfPossibleNames = {"Azula", "Zuko", "Uncle Iroh", "Ty Lee", "Scary Scar Guy", "Fire Lord Ozai",
+                                            "Hama the Blood Bender", "Mai", "Appa", "Long Feng", "Jet", "Cabbage Man"};
+    unsigned num = chrono::system_clock::now().time_since_epoch().count();    //generating a random number for shuffle function
+    shuffle(vectorOfPossibleNames.begin(), vectorOfPossibleNames.end(), default_random_engine(num));
+    for (int i=1 ; i < numOfPlayers; ++i){
+        PlayersVector.push_back(unique_ptr<Player> (new AIPlayer(vectorOfPossibleNames[i])));
+    }
+}
+
 

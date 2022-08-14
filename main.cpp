@@ -24,9 +24,12 @@ int main() {
 
 
     System s(createRegularCardDeck(1), 2);
-    s.printPlayerHands();
-    s.playRound();
-    s.printPlayerHands();
+    for(int i=1; i< 5; ++i) {
+        std::cout << "Round " << i <<" !" << std::endl << std::endl;
+        s.playRound();
+    }
+
+
 
 //    s.printCards();
 //    sf::RenderWindow window(sf::VideoMode(640, 480), "BlackJack game");

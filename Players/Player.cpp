@@ -12,8 +12,6 @@ void Player::addToDeck(Card* newCard) {
 }
 
 void Player::updateAces() {
-    //TODO: find everywhere this static int is and make it a single one for all
-    const static int sizeOfHigherValueAce = 11;
     int sum =0;
     /** first we calculate al the cards that are not aces. Then, we calculate the different possibilities that the aces raise */
     for (const auto& card : this->m_playerHand ){
@@ -81,6 +79,12 @@ void Player::printHand() const {
 
 std::string Player::getName() const {
     return m_name;
+}
+
+void Player::emptyDeck() {
+    while (!m_playerHand.empty()){
+        m_playerHand.pop_back();
+    }
 }
 
 
