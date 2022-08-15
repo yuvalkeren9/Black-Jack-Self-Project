@@ -13,18 +13,21 @@ class Player {
 private:
     std::vector<Card*> m_playerHand;
     std::string m_name;
-    long int m_money;
+    bool isAlive;
     const static int sizeOfHigherValueAce = 11;
 
 
 public:
-    explicit Player(std::string name, long int startingMoney = 1000) : m_playerHand(), m_name(std::move(name)), m_money(startingMoney) {};
+    explicit Player(std::string name, long int startingMoney = 1000) : m_playerHand(), m_name(std::move(name)), isAlive(true) {};
     virtual ~Player() = default;
     void addToDeck(Card* newCard);
     void emptyDeck();
     int getCurrentHandSum() const;
     void print() const;
     void printHand() const;
+
+    void setIsAlive(bool boolCondition);
+    bool getIsAlive();
 
     void updateAces();
     std::string getName() const;

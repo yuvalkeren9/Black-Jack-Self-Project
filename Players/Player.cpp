@@ -87,6 +87,14 @@ void Player::emptyDeck() {
     }
 }
 
+void Player::setIsAlive(bool boolCondition) {
+    isAlive = boolCondition;
+}
+
+bool Player::getIsAlive() {
+    return isAlive;
+}
+
 
 std::ostream& operator<<(std::ostream& os, const Player& player){
     player.print();

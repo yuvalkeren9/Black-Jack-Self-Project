@@ -17,7 +17,6 @@
 #include "Players/RealPlayer.h"
 #include "Players/AIPlayer.h"
 
-
 using namespace std;
 
 queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
@@ -56,16 +55,6 @@ System::System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers) : cardD
     addPlayersToBank();
 }
 
-void System::printPlayerHands() const {
-    for(const auto& player : this->PlayersVector){
-        cout << "Player: " << *player << endl;
-        //player->printHand();
-        cout << "The sum of the player is:" << player->getCurrentHandSum() << endl << endl;
-    }
-    cout << "Player: " << dealer << endl;
-    //dealer.printHand();
-    cout << "The sum of the dealer is:" << dealer.getCurrentHandSum() << endl << endl;
-}
 
 void System::dealStartingCards() {
     static int numOfStartingCards = 2;
@@ -109,7 +98,8 @@ void System::playRound() {
 bool System::checkPlayerForNaturalBlackJack(Player *&player) {
     if(player->getCurrentHandSum() == blackJackWinnerNum){
         processBet(player->getName(), naturalBlackjack);
-        cout << "Player" << *player << "has a Natural BlackJack!" << endl;
+        player->setIsAlive(false);
+        cout << "Player " << *player << " has a Natural BlackJack!" << endl;
         return true;
     }
     return false;
@@ -171,7 +161,11 @@ void System::playResults() {
         endOfRoundDealerBust();
         return;
     }
+    //TODO: fix bug that player can have a natural blackjack and then also win regulary
     for (auto& player : this->PlayersVector){
+        if(!player->getIsAlive()){
+            continue;
+        }
         const string currentPlayerName = player->getName();
         int currentPlayerSum = player->getCurrentHandSum();
         if(currentPlayerSum > blackJackWinnerNum) {
@@ -229,6 +223,7 @@ void System::processBet(const string& playerName, BetType betType ){
             return;
         case 2:
             bank.addMoney(playerName, originalBet);                        //tie with the dealer
+            return;
         default:
             cout << "BAD BAD BAD" <<endl;
             exit(0);
@@ -246,7 +241,7 @@ void System::processBet(const string& playerName, BetType betType ){
 void System::endOfRoundDealerBust(){
     cout << "The dealer has busted! All players who do not have a bust themselves win!" << endl;
     for (auto& player : this->PlayersVector){
-        if(player->getCurrentHandSum() <= blackJackWinnerNum){ //player did not bust
+        if(player->getCurrentHandSum() <= blackJackWinnerNum && player->getIsAlive()){ //player did not bust
             processBet(player->getName(), regular);
         }
     }
@@ -256,9 +251,6 @@ void System::endOfRoundPlayerBust(const string& playerName) {
     cout << playerName << " has a bust! He loses" << endl;
 }
 
-void System::printBankDetails() const {
-    bank.printDetails();
-}
 
 void System::endRound() {
     printPlayerHands();
@@ -267,7 +259,11 @@ void System::endRound() {
         player->emptyDeck();
     }
     dealer.emptyDeck();                            //empty dealer card deck
+    for (auto& player : PlayersVector){
+    player->setIsAlive(true);
+    }
 }
+
 
 void System::createPlayers(int numOfPlayers) {
     createRealPlayer();
@@ -294,3 +290,31 @@ void System::createAIPlayers(int numOfPlayers) {
 }
 
 
+
+
+
+
+
+
+
+/**Testing realted functions */
+
+int System::getPlayersCurrentMoney(int numberOfPlayer) const {
+    assert(numberOfPlayer > 0);
+    return bank.getPlayersMoney(PlayersVector[numberOfPlayer - 1]->getName()); //One liner! :)
+}
+
+void System::printPlayerHands() const {
+    for(const auto& player : this->PlayersVector){
+        cout << "Player: " << *player << endl;
+        //player->printHand();
+        cout << "The sum of the player is:" << player->getCurrentHandSum() << endl << endl;
+    }
+    cout << "Player: " << dealer << endl;
+    //dealer.printHand();
+    cout << "The sum of the dealer is:" << dealer.getCurrentHandSum() << endl << endl;
+}
+
+void System::printBankDetails() const {
+    bank.printDetails();
+}

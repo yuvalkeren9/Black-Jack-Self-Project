@@ -20,16 +20,12 @@ CardShape intToCardTypeAdapter(int value) {
     switch (value){
         case 1:
             return Clubs;
-            break;
         case 2:
             return Diamonds;
-            break;
         case 3:
             return Hearts;
-            break;
         case 4:
             return Spades;
-            break;
         default:
             throw Card::intToCardTypeError(value);
     }

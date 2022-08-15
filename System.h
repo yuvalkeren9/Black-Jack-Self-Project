@@ -75,6 +75,7 @@ private:
     //for testing
     void printPlayerHands() const;
     void printBankDetails() const;
+    int getPlayersCurrentMoney(int numberOfPlayer) const;
 
 };
 
