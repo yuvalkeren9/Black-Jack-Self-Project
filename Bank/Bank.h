@@ -18,6 +18,7 @@ public:
     void addPlayerToBank(const std::string &playerName, int moneyToInit = 1000);
     void addMoney(const std::string &playerName, int moneyToAdd);
     void decreaseMoney(const std::string &playerName, int moneyToADecrease);
+    void removePlayerFromBank(const std::string&playerName);
     int getPlayersMoney(const std::string& playerName) const;
     class notEnoughMoney;
     void printDetails() const;

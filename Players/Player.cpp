@@ -91,8 +91,12 @@ void Player::setIsAlive(bool boolCondition) {
     isAlive = boolCondition;
 }
 
-bool Player::getIsAlive() {
+bool Player::getIsAlive() const {
     return isAlive;
+}
+
+int Player::getAmountOfCardsInHand() const {
+    return m_playerHand.size();
 }
 
 

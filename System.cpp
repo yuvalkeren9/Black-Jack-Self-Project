@@ -50,25 +50,24 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     return tempQueue;
 }
 
-System::System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer") {
+System::System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer")
+, isGameFinished(false) {
     createPlayers(numOfPlayers);
     addPlayersToBank();
 }
 
 
 void System::dealStartingCards() {
-    static int numOfStartingCards = 2;
     for (auto& player: this->PlayersVector){
-        for(int i=0; i < numOfStartingCards; ++i) {
-            hitAPlayer(player.get());
+        if (player->getIsAlive()) {
+            for (int i = 0; i < amountOfStartingCards; ++i) {
+                hitAPlayer(player.get());
+            }
         }
     }
-    for (int i =0; i < numOfStartingCards; ++i){
-        //TODO: hit dealer function to replace following code
+    for (int i =0; i < amountOfStartingCards; ++i){
         Player* tempDealerPtr = &dealer;
         hitAPlayer(tempDealerPtr);
-//        dealer.hit(this->cardDeck.front().get());
-//        moveFirstCardToEndOfDeck();
     }
 
 }
@@ -79,13 +78,19 @@ void System::moveFirstCardToEndOfDeck() {
     this->cardDeck.push(move(temp));
 }
 
-void System::playRound() {
+bool System::playRound() {
     dealStartingCards();
     printPlayerHands();
     collectStartingBets();
+    //checkIfPlayersWantToDoubleDown();
     printBankDetails();
     if(checkDealerForNaturalBlackJack()){
-        return;
+        endRound();
+        if (isGameFinished) {
+            return true;
+        }
+        else
+            return false;
     }
     for (auto& player: this->PlayersVector){
         while(makeMove(player.get()));     //makeMove returns false when player decides to stand or is over 21
@@ -93,13 +98,20 @@ void System::playRound() {
     playDealerTurn();
     playResults();
     endRound();
+    if (isGameFinished) {
+        return true;
+    }
+    else
+        return false;
 }
 
-bool System::checkPlayerForNaturalBlackJack(Player *&player) {
+bool System::checkPlayerForBlackJack(Player *player) {
     if(player->getCurrentHandSum() == blackJackWinnerNum){
-        processBet(player->getName(), naturalBlackjack);
-        player->setIsAlive(false);
-        cout << "Player " << *player << " has a Natural BlackJack!" << endl;
+        if(player->getAmountOfCardsInHand() == amountOfStartingCards) {
+            processBet(player->getName(), naturalBlackjack);
+            player->setIsAlive(false);
+            cout << "Player " << *player << " has a Natural BlackJack!" << endl;
+        }
         return true;
     }
     return false;
@@ -107,7 +119,10 @@ bool System::checkPlayerForNaturalBlackJack(Player *&player) {
 
 bool System::checkDealerForNaturalBlackJack() {
     if(dealer.getCurrentHandSum() == blackJackWinnerNum){
-        cout << "Player" << dealer << "has a BlackJack!" << endl;
+        cout << "The dealer has a Natural BlackJack!" << endl;
+        for (auto& player : PlayersVector){
+            checkPlayerForBlackJack(player.get());
+        }
         return true;
     }
     else {
@@ -121,7 +136,7 @@ void System::hitAPlayer(Player* player) {
 }
 
 bool System::makeMove(Player* player){
-    if(checkPlayerForNaturalBlackJack(player)){
+    if(checkPlayerForBlackJack(player)){
         return false;
     }
     Action action = player->chooseAction();
@@ -134,7 +149,6 @@ bool System::makeMove(Player* player){
                     return false;
                 }
                 else {
-                    //TODO: print the actual card
                     cout << "your current sum is:" << player->getCurrentHandSum() << endl;
                     return true;
                 }
@@ -161,7 +175,6 @@ void System::playResults() {
         endOfRoundDealerBust();
         return;
     }
-    //TODO: fix bug that player can have a natural blackjack and then also win regulary
     for (auto& player : this->PlayersVector){
         if(!player->getIsAlive()){
             continue;
@@ -198,6 +211,9 @@ void System::addPlayersToBank(){
 
 void System::collectStartingBets() {
     for (auto& player : PlayersVector){
+        if(!player->getIsAlive()){
+            continue;
+        }
         int currentPlayersMoney = bank.getPlayersMoney(player->getName());
         const string currentPlayerName = player->getName();
         assert(currentPlayersMoney != 0);
@@ -210,6 +226,24 @@ void System::collectStartingBets() {
             bank.decreaseMoney(currentPlayerName, startingBet);
         }
     }
+}
+
+void System::checkIfPlayersWantToDoubleDown() {
+    //TODO: this function, for real
+    for (auto& player : PlayersVector){
+        int currentPlayersMoney = bank.getPlayersMoney(player->getName());
+        const string currentPlayerName = player->getName();
+        assert(currentPlayersMoney != 0);
+        if(currentPlayersMoney < startingBet){
+            currentRoundBetsMap[currentPlayerName] = currentPlayersMoney;
+            bank.decreaseMoney(currentPlayerName, currentPlayersMoney);
+        }
+        else{
+            currentRoundBetsMap[currentPlayerName] = startingBet;
+            bank.decreaseMoney(currentPlayerName, startingBet);
+        }
+    }
+
 }
 
 void System::processBet(const string& playerName, BetType betType ){
@@ -258,10 +292,8 @@ void System::endRound() {
     for (auto& player : PlayersVector){            //empty players card deck
         player->emptyDeck();
     }
-    dealer.emptyDeck();                            //empty dealer card deck
-    for (auto& player : PlayersVector){
-    player->setIsAlive(true);
-    }
+    dealer.emptyDeck();    //empty dealer card deck
+    checkAlivenessOfPLayers();
 }
 
 
@@ -318,3 +350,41 @@ void System::printPlayerHands() const {
 void System::printBankDetails() const {
     bank.printDetails();
 }
+
+void System::checkAlivenessOfPLayers() {
+    auto it = PlayersVector.begin();
+    while ( it != PlayersVector.end()){
+        const string currentPlayerName = (*it)->getName();
+        if(bank.getPlayersMoney(currentPlayerName) == 0){
+            removePlayer(it->get());
+        }
+        else{
+            (*it)->setIsAlive(true);
+            ++it;
+        }
+    }
+    auto playersStillInGame = PlayersVector.size();
+    if (playersStillInGame == 1){
+        cout << "We have a winner!! Player " << PlayersVector[0]->getName() <<" is the BlackJack Master!" << endl;
+        isGameFinished = true;
+        return;
+    }
+    if (playersStillInGame == 0){
+        cout << "We have a tie! What are the odds??" << endl;
+        isGameFinished = true;
+        return;
+    }
+}
+
+void System::removePlayer(Player *player) {
+    for(auto it = PlayersVector.begin(); it != PlayersVector.end(); ++it){
+        const string currentPlayerName= (*it)->getName();
+        if (currentPlayerName == player->getName()){
+            bank.removePlayerFromBank(currentPlayerName);
+            PlayersVector.erase(it);
+            return;
+        }
+    }
+}
+
+

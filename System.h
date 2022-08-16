@@ -24,15 +24,18 @@ private:
     AIPlayer dealer;
     Bank bank;
     std::unordered_map<std::string, int> currentRoundBetsMap;
+    bool isGameFinished;
+
     const static int blackJackWinnerNum = 21;
     const static int startingBet = 100;
+    const static int amountOfStartingCards = 2;
     enum BetType  {regular, naturalBlackjack, tie};
 
     /**class member functions */
     void moveFirstCardToEndOfDeck();
     void dealStartingCards();
 
-    bool checkPlayerForNaturalBlackJack(Player *&player);
+    bool checkPlayerForBlackJack(Player *player);
     bool checkDealerForNaturalBlackJack ();
 
 
@@ -52,10 +55,13 @@ private:
 
 
     void endRound();
+    void checkAlivenessOfPLayers();
+    void removePlayer(Player* player);
 
 
     void addPlayersToBank();
     void collectStartingBets();
+    void checkIfPlayersWantToDoubleDown();
     void processBet(const std::string& playerName, BetType betType);
 
 
@@ -70,7 +76,7 @@ private:
 
 
 //Is a private function, only here for testing (make it private when you finish)
-    void playRound();
+    bool playRound();
 
     //for testing
     void printPlayerHands() const;

@@ -27,7 +27,9 @@ public:
     void printHand() const;
 
     void setIsAlive(bool boolCondition);
-    bool getIsAlive();
+    bool getIsAlive() const;
+
+    int getAmountOfCardsInHand() const;
 
     void updateAces();
     std::string getName() const;

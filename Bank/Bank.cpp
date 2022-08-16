@@ -55,5 +55,9 @@ void Bank::printDetails() const {
 
 }
 
+void Bank::removePlayerFromBank(const string &playerName) {
+    listOfParticipants.erase(playerName);
+}
+
 
 
