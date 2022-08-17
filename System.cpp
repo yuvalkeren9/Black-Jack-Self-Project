@@ -16,6 +16,7 @@
 #include <cassert>
 #include "Players/RealPlayer.h"
 #include "Players/AIPlayer.h"
+#include "Cards/RegularNumCard.h"
 
 using namespace std;
 
@@ -31,7 +32,8 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     for (int i=0; i < numOfDecks; ++i){                 //creating the 2-10 regular cards
         for(int j=smallestCardValue; j <= largestCardValue; ++j){
             for (int p = 1; p <= differentCardTypes; ++p) {
-                tempVector.push_back(make_unique<Card> (j, intToCardTypeAdapter(p)));
+//                tempVector.push_back(make_unique<Card> (j, intToCardTypeAdapter(p)));
+                tempVector.push_back(unique_ptr<Card> (new RegularNumCard(j, intToCardTypeAdapter(p))));
             }
         }               //the royal house is seperated from the regular cards because I wanted to experiment with make unique
 
@@ -385,6 +387,36 @@ void System::removePlayer(Player *player) {
             return;
         }
     }
+}
+
+
+
+
+
+/** Gui related */
+
+
+void System::setGameWindow(sf::RenderWindow& window) const {
+    /**Loading Files*/
+    sf::Font westernFont;
+    westernFont.loadFromFile("../GUIfiles/Fonts/Old Town Regular.ttf");
+
+
+
+    /**drawing dealer */
+    sf::Text dealerNameText("Dealer", westernFont, 60);
+    auto dealerSize = dealerNameText.getLocalBounds();
+    dealerNameText.setOrigin((dealerSize.width)/2, (dealerSize.height)/2);
+    dealerNameText.setPosition(600,50);
+    window.draw(dealerNameText);
+
+    /** drawing Real player*/
+    sf::Text playerNameText(PlayersVector[0]->getName(), westernFont, 60);
+    auto playerNameTextSize = playerNameText.getLocalBounds();
+    playerNameText.setOrigin((playerNameTextSize.width)/2, (playerNameTextSize.height)/2);
+    playerNameText.setPosition(600,650);
+    window.draw(playerNameText);
+
 }
 
 

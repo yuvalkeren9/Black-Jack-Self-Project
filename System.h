@@ -68,7 +68,9 @@ private:
 
 
 
-        public:
+public:
+    /**GUI realted stuff */
+    void setGameWindow(sf::RenderWindow& window) const;
 
     /** Constructor for the System class. Doesn't create its own deck so that any sort of and amount of cards can be played. */
     explicit System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers);

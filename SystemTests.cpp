@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 #include <sstream>
+#include "Cards/RegularNumCard.h"
 
 using namespace std;
 /** Helper functions */
@@ -148,22 +149,22 @@ bool twoRoundsInARowTest(){
     std::queue<std::unique_ptr<Card>> forTesting;
 
     //cards for first round. Real player loses with 16, AI wins with 20, dealer loses with 18
-    forTesting.push(std::unique_ptr<Card> (new Card(5,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5,Clubs)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    forTesting.push(std::unique_ptr<Card> (new Card(8,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8,Clubs)) );
 
     //cards for second round. Real player has 20, AI busts with 23, dealer loses with 18
-    forTesting.push(std::unique_ptr<Card> (new Card(5,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5,Clubs)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(5,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5,Clubs)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    forTesting.push(std::unique_ptr<Card> (new Card(8,Clubs)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(5,Clubs)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(8,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5,Clubs)) );
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8,Clubs)) );
 
     System s(move(forTesting), 2);
     s.playRound();
@@ -194,15 +195,15 @@ bool twoRoundsShuffleDeckTest(){
     std::queue<std::unique_ptr<Card>> forTesting;
     //cards for first round. Real player loses with 18, AI wins with 20, dealer has 19
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    forTesting.push(std::unique_ptr<Card> (new Card(9, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(9, Hearts)));
 
     //cards for second round. Player loses with 19, AI loses with 18, dealer has 20
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
 
     System s(move(forTesting), 2);
     s.playRound();
@@ -228,14 +229,14 @@ bool changeAceFrom11ToOne(){
     std::queue<std::unique_ptr<Card>> forTesting;
     //cards for first round. Real player wins with 20, AI wins with 20, dealer has 19
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    forTesting.push(std::unique_ptr<Card> (new Card(9, Hearts)));
-    forTesting.push(std::unique_ptr<Card> (new Card(5, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(9, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    forTesting.push(std::unique_ptr<Card> (new Card(5, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5, Hearts)));
 
     System s(move(forTesting), 2);
     s.playRound();
@@ -261,7 +262,7 @@ bool cardsNotDealtToDeadPeople(){
         forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
         forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
         forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
-        forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+        forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
         forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
         forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
         System s(move(forTesting), 3);
@@ -289,7 +290,7 @@ bool singleWinner(){
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     System s(move(forTesting), 2);
@@ -318,9 +319,9 @@ bool tieBetweenPlayers(){
     std::queue<std::unique_ptr<Card>> forTesting;
 
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
-    forTesting.push(std::unique_ptr<Card> (new Card(8, Hearts)));
+    forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     System s(move(forTesting), 2);

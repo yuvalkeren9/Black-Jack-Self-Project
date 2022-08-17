@@ -4,7 +4,9 @@
 
 #include "card.h"
 #include <fstream>
+#include <iostream>
 
+using namespace std;
 
 class Card::intToCardTypeError : public std::exception {
 private:
@@ -40,5 +42,39 @@ int Card::getValue() const {
 }
 
 
+string Card::getCardShapeAsString() {
+    string cardShapeString;
+    switch (static_cast<CardShape> (this->type)){
+        case 0:
+            cardShapeString = "Clubs";
+            break;
+        case 1:
+            cardShapeString = "Diamonds";
+            break;
+        case 2:
+            cardShapeString = "Hearts";
+            break;
+        case 3:
+            cardShapeString = "Spades";
+            break;
+        default:
+            cout << "Shit I messed something up" << endl;
+            break;
+    }
+    return cardShapeString;
+}
+
+const sf::Image& Card::getImage() const {
+    return cardImage;
+}
+
+
+string createStringForCardTypeSprite(Card& card){
+    string cardShapeString = card.getCardShapeAsString();
+    string startOfFileText = "../Sprites/Cards/card";
+    string cardValue = to_string(card.getValue());
+    string pngEnding = ".png";
+    return (startOfFileText + cardShapeString + cardValue + pngEnding);
+}
 
 

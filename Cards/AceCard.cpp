@@ -6,6 +6,8 @@
 #include "AceCard.h"
 #include <cassert>
 
+using namespace std;
+
 void AceCard::changeAceValue() {
     assert(this->getValue() == 1 || this->getValue() == 11);
     switch(getValue()){
@@ -21,5 +23,15 @@ void AceCard::changeAceValue() {
             std::cerr << "something has gone very wrong! The value of the card is:" <<this->getValue() << std::endl;
             break;
     }
+}
+
+void AceCard::setImage() {
+    string cardShapeString = getCardShapeAsString();
+    string startOfFileText = "../GUIfiles/Sprites/Cards/card";
+    string cardValue = "A";
+    string pngEnding = ".png";
+    string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
+    cardImage.loadFromFile(fileName);
+
 }
 

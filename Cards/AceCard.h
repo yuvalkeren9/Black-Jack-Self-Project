@@ -10,10 +10,13 @@
 class AceCard : public Card {
 private:
     bool is11;
+    void setImage();
 
 
 public:
-    explicit AceCard(const CardShape& cardShape) : Card(11, cardShape), is11(true) {};
+    explicit AceCard(const CardShape& cardShape) : Card(11, cardShape), is11(true) {
+        setImage();
+    };
     void changeAceValue();
 };
 
