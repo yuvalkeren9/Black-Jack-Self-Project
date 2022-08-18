@@ -14,6 +14,7 @@
 #include "Players/Player.h"
 #include "Players/AIPlayer.h"
 #include "Bank/Bank.h"
+#include "GUImanager/GUImanager.h"
 
 
 class System {
@@ -26,9 +27,18 @@ private:
     std::unordered_map<std::string, int> currentRoundBetsMap;
     bool isGameFinished;
 
+    GUImanager manager;
+
+/**backend consts */
     const static int blackJackWinnerNum = 21;
     const static int startingBet = 100;
     const static int amountOfStartingCards = 2;
+
+    /** GUI consts*/
+    static const int bankTextOffset = 35;
+
+
+
     enum BetType  {regular, naturalBlackjack, tie};
 
     /**class member functions */
@@ -65,12 +75,22 @@ private:
     void processBet(const std::string& playerName, BetType betType);
 
 
+    /** GUI private functions*/
 
 
 
 public:
     /**GUI realted stuff */
-    void setGameWindow(sf::RenderWindow& window) const;
+    void setGameWindow(sf::RenderWindow& window);
+    void drawSetupWindow(sf::RenderWindow& window);
+    void createAIPlayerTextObjects(int numOfAIPlayers);
+    void createGameStatObjects();
+    void drawStatsTextObjects(sf::RenderWindow& window);
+
+    void loadFiles(){
+        manager.addFont("marlboroFont", "C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Marlboro.ttf");
+        manager.addFont("westernFont", "C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Old Town Regular.ttf");
+    }
 
     /** Constructor for the System class. Doesn't create its own deck so that any sort of and amount of cards can be played. */
     explicit System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers);

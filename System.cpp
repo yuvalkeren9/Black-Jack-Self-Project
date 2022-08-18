@@ -314,6 +314,7 @@ void System::createRealPlayer() {
 }
 
 void System::createAIPlayers(int numOfPlayers) {
+    //TODO: compare name to REALPLAYER name before choosing it
     vector<string> vectorOfPossibleNames = {"Azula", "Zuko", "Uncle Iroh", "Ty Lee", "Scary Scar Guy", "Fire Lord Ozai",
                                             "Hama the Blood Bender", "Mai", "Appa", "Long Feng", "Jet", "Cabbage Man"};
     unsigned num = chrono::system_clock::now().time_since_epoch().count();    //generating a random number for shuffle function
@@ -390,33 +391,5 @@ void System::removePlayer(Player *player) {
 }
 
 
-
-
-
-/** Gui related */
-
-
-void System::setGameWindow(sf::RenderWindow& window) const {
-    /**Loading Files*/
-    sf::Font westernFont;
-    westernFont.loadFromFile("../GUIfiles/Fonts/Old Town Regular.ttf");
-
-
-
-    /**drawing dealer */
-    sf::Text dealerNameText("Dealer", westernFont, 60);
-    auto dealerSize = dealerNameText.getLocalBounds();
-    dealerNameText.setOrigin((dealerSize.width)/2, (dealerSize.height)/2);
-    dealerNameText.setPosition(600,50);
-    window.draw(dealerNameText);
-
-    /** drawing Real player*/
-    sf::Text playerNameText(PlayersVector[0]->getName(), westernFont, 60);
-    auto playerNameTextSize = playerNameText.getLocalBounds();
-    playerNameText.setOrigin((playerNameTextSize.width)/2, (playerNameTextSize.height)/2);
-    playerNameText.setPosition(600,650);
-    window.draw(playerNameText);
-
-}
 
 
