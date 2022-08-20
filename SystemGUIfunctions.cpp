@@ -82,7 +82,7 @@ void System::createAIPlayerTextObjects(int playerNumber) {
 }
 
 
-void System::drawSetupWindow(sf::RenderWindow& window) {
+void System::drawSetupWindow(sf::RenderWindow& window) const {
     manager.drawBackground(window);
     manager.drawSetupTextObjects(window);
 }
@@ -158,8 +158,58 @@ void System::createGameStatObjects() {
     }
 }
 
-void System::drawStatsTextObjects(sf::RenderWindow &window) {
+void System::drawStatsTextObjects(sf::RenderWindow &window) const {
     manager.drawStatTextObjects(window);
 }
 
+int System::getNumberOfPlayers() const {
+    string temp;
+    if(!isWithGUI){
+        cout << "Enter number of players (1-5)" << endl;
+    }
+    //TODO: check for valid input
+    getline(cin, temp);
+    return stoi(temp);
+}
 
+
+void System::render(sf::RenderWindow &window) const {
+    window.clear();
+    drawSetupWindow(window);
+    drawStatsTextObjects(window);
+    manager.drawPlayerLocations(window);
+    window.display();
+}
+
+sf::Vector2<float> calculateWhereToLocatePlayer(int i){
+    const float offset = 75;
+    float x;
+    float y;
+    switch (i){
+        case 1:
+            x = 0;
+            y = 200 + offset;
+            break;
+        case 2:
+            x = 900;
+            y = 200 + offset;
+            break;
+        case 3:
+            x = 900;
+            y = 500 + offset;
+            break;
+        case 4:
+            x = 0;
+            y = 500 + offset;
+            break;
+        default:
+            cout << "too many players...";
+            throw logic_error("You tried to set too many player locations");
+    }
+    return {x,y};
+}
+
+
+void System::drawPlayerLocations(sf::RenderWindow& window) const {
+    manager.drawPlayerLocations(window);
+}

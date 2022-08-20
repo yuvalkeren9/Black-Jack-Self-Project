@@ -7,7 +7,7 @@ add_executable(cardgame Cards/card.cpp Cards/card.h Cards/RoyaltyCard.cpp Cards/
         main.cpp
         #SystemTests.cpp
         #Cards/matrix.cpp Cards/matrix.h
-        Cards/RegularNumCard.cpp Cards/RegularNumCard.h SystemGUIfunctions.cpp GUImanager/GUImanager.cpp GUImanager/GUImanager.h)
+        Cards/RegularNumCard.cpp Cards/RegularNumCard.h SystemGUIfunctions.cpp GUImanager/GUImanager.cpp GUImanager/GUImanager.h GUImanager/Textbox.cpp GUImanager/Textbox.h)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR C:/Program Files/SFML/lib/cmake/SFML)

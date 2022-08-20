@@ -35,7 +35,7 @@ bool run_test(std::function<bool()> test, std::string test_name)
 
 bool naturalBlackJackRealPlayerTest(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Yuval\n");
+    std::istringstream input("2\nYuval\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -45,7 +45,7 @@ bool naturalBlackJackRealPlayerTest(){
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Spades, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
     std::cin.rdbuf(orig);
     if (s.getPlayersCurrentMoney(1) == 1050){
@@ -59,7 +59,7 @@ bool naturalBlackJackRealPlayerTest(){
 
 bool naturalBlackJackAIPlayerTest(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Suki\n1\n");
+    std::istringstream input("2\nSuki\n1\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -69,7 +69,7 @@ bool naturalBlackJackAIPlayerTest(){
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
     std::cin.rdbuf(orig);
     if (s.getPlayersCurrentMoney(2) == 1050){
@@ -83,7 +83,7 @@ bool naturalBlackJackAIPlayerTest(){
 
 bool naturalBlackJackDealerTest(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Katara\n1\n");
+    std::istringstream input("2\nKatara\n1\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -93,7 +93,7 @@ bool naturalBlackJackDealerTest(){
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
 
 
@@ -112,7 +112,7 @@ bool naturalBlackJackDealerTest(){
 
 bool naturalBlackJackDealerAndPlayer(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Aang\n");
+    std::istringstream input("2\nAang\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -123,7 +123,7 @@ bool naturalBlackJackDealerAndPlayer(){
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Diamonds, Jack)));
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
 
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
 
 
@@ -143,7 +143,7 @@ bool naturalBlackJackDealerAndPlayer(){
 
 bool twoRoundsInARowTest(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Aang\n1\n0\n");
+    std::istringstream input("2\nAang\n1\n0\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -166,7 +166,7 @@ bool twoRoundsInARowTest(){
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5,Clubs)) );
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8,Clubs)) );
 
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
     if(s.getPlayersCurrentMoney(1) != 900 && s.getPlayersCurrentMoney(2) != 1100){
         cout << "Test failed in the first round.. Shame on you" << endl;
@@ -189,7 +189,7 @@ bool twoRoundsInARowTest(){
 
 bool twoRoundsShuffleDeckTest(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Sokka\n1\n1\n");
+    std::istringstream input("2\nSokka\n1\n1\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -205,7 +205,7 @@ bool twoRoundsShuffleDeckTest(){
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
 
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
     s.playRound();
     std::cin.rdbuf(orig);
@@ -223,7 +223,7 @@ bool twoRoundsShuffleDeckTest(){
 
 bool changeAceFrom11ToOne(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("Anna Zack\n0\n0\n0\n1\n");
+    std::istringstream input("2\nAnna Zack\n0\n0\n0\n1\n");
     std::cin.rdbuf(input.rdbuf());
 
     std::queue<std::unique_ptr<Card>> forTesting;
@@ -238,7 +238,7 @@ bool changeAceFrom11ToOne(){
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(5, Hearts)));
 
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     s.playRound();
     std::cin.rdbuf(orig);
     if (s.getPlayersCurrentMoney(1) == 1100 && s.getPlayersCurrentMoney(2) == 1100){
@@ -253,7 +253,7 @@ bool changeAceFrom11ToOne(){
 
 bool cardsNotDealtToDeadPeople(){
         std::streambuf* orig = std::cin.rdbuf();
-        std::istringstream input("Noa Kirel\n");
+        std::istringstream input("3\nNoa Kirel\n");
         std::cin.rdbuf(input.rdbuf());
         std::queue<std::unique_ptr<Card>> forTesting;
 
@@ -265,7 +265,7 @@ bool cardsNotDealtToDeadPeople(){
         forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
         forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
         forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-        System s(move(forTesting), 3);
+        System s(move(forTesting), nullptr);
         for (int i=1; i<=11; ++i){
             cout << "start of round " << i <<endl <<endl;
             s.playRound();
@@ -283,7 +283,7 @@ bool cardsNotDealtToDeadPeople(){
 
 bool singleWinner(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("John Travolta\n");
+    std::istringstream input("2\nJohn Travolta\n");
     std::cin.rdbuf(input.rdbuf());
     std::queue<std::unique_ptr<Card>> forTesting;
 
@@ -293,7 +293,7 @@ bool singleWinner(){
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     int i= 1;
     while(true){
         cout << "start of round " << i <<endl <<endl;
@@ -314,7 +314,7 @@ bool singleWinner(){
 
 bool tieBetweenPlayers(){
     std::streambuf* orig = std::cin.rdbuf();
-    std::istringstream input("John Travolta\n");
+    std::istringstream input("2\nJohn Travolta\n");
     std::cin.rdbuf(input.rdbuf());
     std::queue<std::unique_ptr<Card>> forTesting;
 
@@ -324,7 +324,7 @@ bool tieBetweenPlayers(){
     forTesting.push(std::unique_ptr<Card> (new RegularNumCard(8, Hearts)));
     forTesting.push(std::unique_ptr<Card> (new RoyaltyCard(Clubs, Jack)) );
     forTesting.push(std::unique_ptr<Card> (new AceCard(Hearts)));
-    System s(move(forTesting), 2);
+    System s(move(forTesting), nullptr);
     int i= 1;
     while(true){
         cout << "start of round " << i <<endl <<endl;

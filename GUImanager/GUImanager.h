@@ -21,6 +21,8 @@ private:
 
     std::unordered_map<std::string, std::unique_ptr<sf::Text>> textStatsObjectsMap;
 
+    std::unordered_map<std::string, std::unique_ptr<sf::Vector2<float>>> playerLocationMap;
+
     sf::Sprite background;
 
 
@@ -48,11 +50,11 @@ public:
      * @param fontName - The name of the font
      * @return Refrence to the font. If the font is not present, a logic exception will be thrown
      */
-    const sf::Font& getFont(const std::string& fontName);
+    const sf::Font& getFont(const std::string& fontName) const;
 
 
     void addTextObject(const std::string &objectName, const sf::Text &textObject, int mapKey);
-    sf::Text& getTextObject(const std::string& objectName);
+    sf::Text& getTextObject(const std::string& objectName) const;
 
     void drawSetupTextObjects(sf::RenderWindow& window) const {
         for (auto& textObjects : textSetupObjectsMap)
@@ -66,7 +68,15 @@ public:
 
 
     void setBackground(const std::string& filePath);
-    void drawBackground(sf::RenderWindow& window);
+    void drawBackground(sf::RenderWindow& window) const;
+
+
+    /**Players related functions*/
+    void addPlayer(const std::string& playerName, float x, float y);
+    void addPlayer(const std::string &playerName,const sf::Vector2<float>& playerLocation);
+    sf::Vector2<float> getPlayerLocation(const std::string& playerName) const;
+    //for testing only
+    void drawPlayerLocations(sf::RenderWindow& window) const;
 };
 
 

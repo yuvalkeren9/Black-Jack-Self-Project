@@ -52,11 +52,13 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     return tempQueue;
 }
 
-System::System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer")
-, isGameFinished(false) {
+System::System(std::queue<std::unique_ptr<Card>> deck, sf::RenderWindow* window, bool isWithGUI) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer")
+, isGameFinished(false), windowUsed(window), isWithGUI(isWithGUI) {
+    int numOfPlayers = getNumberOfPlayers();
     createPlayers(numOfPlayers);
     addPlayersToBank();
 }
+
 
 
 void System::dealStartingCards() {
@@ -135,6 +137,10 @@ bool System::checkDealerForNaturalBlackJack() {
 void System::hitAPlayer(Player* player) {
     player->hit(this->cardDeck.front().get());   //giving the player a regular C pointer of a card
     moveFirstCardToEndOfDeck();
+    if(isWithGUI){
+        //TODO: the below function
+        // hitAPlayerGUI();
+    }
 }
 
 bool System::makeMove(Player* player){
@@ -302,15 +308,19 @@ void System::endRound() {
 void System::createPlayers(int numOfPlayers) {
     createRealPlayer();
     createAIPlayers(numOfPlayers);
-
+    if(isGameFinished) {
+        render(*windowUsed);
+    }
 }
 
 void System::createRealPlayer() {
-    cout << "Please select a name:" <<endl;
     string inputFromUser;
+    if(!isWithGUI) {
+        cout << "Please select a name:" << endl;
+    }
     getline(cin, inputFromUser);
+    manager.addPlayer(inputFromUser, 600, 700);
     PlayersVector.push_back(unique_ptr<Player> (new RealPlayer(inputFromUser)));
-    cout << endl;
 }
 
 void System::createAIPlayers(int numOfPlayers) {
@@ -320,7 +330,10 @@ void System::createAIPlayers(int numOfPlayers) {
     unsigned num = chrono::system_clock::now().time_since_epoch().count();    //generating a random number for shuffle function
     shuffle(vectorOfPossibleNames.begin(), vectorOfPossibleNames.end(), default_random_engine(num));
     for (int i=1 ; i < numOfPlayers; ++i){
-        PlayersVector.push_back(unique_ptr<Player> (new AIPlayer(vectorOfPossibleNames[i])));
+        string playerName = vectorOfPossibleNames[i];
+        sf::Vector2<float> playerLocation = calculateWhereToLocatePlayer(i);
+        manager.addPlayer(playerName, playerLocation);
+        PlayersVector.push_back(unique_ptr<Player> (new AIPlayer(playerName)));
     }
 }
 

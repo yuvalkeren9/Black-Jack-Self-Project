@@ -5,54 +5,153 @@
 #include "Cards/AceCard.h"
 #include "Cards/RoyaltyCard.h"
 #include "Cards/RegularNumCard.h"
+#include "GUImanager/Textbox.h"
 
 using namespace std;
 
+/** Functions to help set up GUI system*/
+string getPlayerSettingAsString(sf::RenderWindow& window);
 
-int main() {
-    System s(createRegularCardDeck(1), 5);
-//    for(int i=1; i< 5; ++i) {
-//        std::cout << "Round " << i <<" !" << std::endl << std::endl;
-//        s.playRound();
+//
+//int main() {
+//    /** Creating game window */
+//    sf::RenderWindow window(sf::VideoMode(1200, 880), "BlackJack game");
+//    sf::RenderWindow* windowPtr = &window;
+//
+//
+//    /** setting up system */
+//
+//    std::streambuf* orig = std::cin.rdbuf();
+//    string stringToInjectIntoCin = getPlayerSettingAsString(window);
+//    std::istringstream input(stringToInjectIntoCin);
+//    std::cin.rdbuf(input.rdbuf());
+//    System s(createRegularCardDeck(1),windowPtr, true);
+//    std::cin.rdbuf(orig);
+//
+//
+//    /**Loading Files*/
+//    s.loadFiles();
+//
+//
+//
+//    /** settting up starting window*/
+//    s.setGameWindow(window);
+//    s.createGameStatObjects();
+//
+//
+//    while (window.isOpen()){
+//        sf::Event event;
+//
+//        while (window.pollEvent(event)){
+//            if (event.type == sf::Event::Closed)
+//                window.close();
+//        }
+//        //s.playRound();
+//        window.clear();
+//        s.drawSetupWindow(window);
+//        s.drawStatsTextObjects(window);
+//        s.drawPlayerLocations(window);
+//        window.display();
 //    }
-    RegularNumCard card1(5, Hearts);
-    RoyaltyCard card2(Diamonds, Jack);
-    AceCard card3(Spades);
+//    return 0;
+//}
 
-    /** Creating game window */
-    sf::RenderWindow window(sf::VideoMode(1200, 880), "BlackJack game");
-    /**Loading Files*/
-    s.loadFiles();
-
-
-    /** settting up starting window*/
-    s.setGameWindow(window);
-    s.createGameStatObjects();
+int main(){
+        System s(createRegularCardDeck(1),nullptr);
+        while(s.playRound());
+};
 
 
-    sf::Texture texture;
-    texture.loadFromImage(card2.getImage());  //Load Texture from image
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
-    sprite.setPosition(200, 350);
-    sprite.setScale(0.5,0.5);
 
-    while (window.isOpen()){
+
+string getPlayerSettingAsString(sf::RenderWindow& window){
+    /** loading background*/
+    sf::Texture dogsBackground;
+    dogsBackground.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/dogsBackground.jpg");
+    sf::Sprite dogsBackgroundSprite;
+    dogsBackgroundSprite.setTexture(dogsBackground);
+    dogsBackgroundSprite.setScale(1.5,1.5);
+
+
+    /**loading font*/
+    sf::Font marlboro;
+    marlboro.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Marlboro.ttf");
+    
+    /** creating regular text objects*/
+    sf::Text welcomeMessage("Welcome to Yuval's BlackJack!", marlboro, 60);
+    auto welcomeMessageSize = welcomeMessage.getLocalBounds();
+    welcomeMessage.setOrigin((welcomeMessageSize.width)/2, (welcomeMessageSize.height)/2);
+    welcomeMessage.setPosition(600,100);
+
+    sf::Text enterNumOfPlayersText("Please enter number of player (1-5)",marlboro,30);
+    enterNumOfPlayersText.setPosition(300,200);
+
+    sf::Text enterPlayerNameText("Please enter the name you wish to play with", marlboro, 30);
+    enterPlayerNameText.setPosition(300,200);
+
+    sf::Text createdBy("This game was created by Yuval Keren, feel free to copy whatever! Have fun :)", marlboro, 40);
+    createdBy.setPosition(0,800);
+    
+    
+    /** creating text boxes */
+    Textbox textboxForNumOfPlayers;
+    textboxForNumOfPlayers.setPosition(900, 200);
+   
+    textboxForNumOfPlayers.setFont(marlboro);
+
+    Textbox textboxForName;
+    textboxForName.setPosition(900, 200);
+    textboxForName.setFont(marlboro);
+
+
+    bool didUserFinish = false;
+    int whichStepToDo = 1;                 //in order to receive users input in a certain order,
+    // we track which input the user is entering now (num of players, user name, etc..)
+
+    string stringToInjectIntoCin;
+    while(window.isOpen() && !didUserFinish){
         sf::Event event;
-
-
         while (window.pollEvent(event)){
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::TextEntered && whichStepToDo == 1){
+                if(event.text.unicode == 13){
+                    whichStepToDo = 2;
+                    stringToInjectIntoCin += textboxForNumOfPlayers.getString() + "\n";  //so when doing future +=, there will be a \n between words
+                    continue;
+                }
+                textboxForNumOfPlayers.typedOn(event);
+            }
+            if (event.type == sf::Event::TextEntered && whichStepToDo == 2){
+                if(event.text.unicode == 13){
+                    didUserFinish = true;
+                    stringToInjectIntoCin += textboxForName.getString();
+                    continue;
+                }
+                textboxForName.typedOn(event);
+            }
+            //TODO: only when a valid string was entered
         }
 
-
-//TODO: do a system "load" function, which loads everything OUTSIDE the loop
+        /** drawing */
         window.clear();
-        s.drawSetupWindow(window);
-        s.drawStatsTextObjects(window);
-        //TODO: displayCurrentStats
+        window.draw(dogsBackgroundSprite);
+        window.draw(welcomeMessage);
+        window.draw(createdBy);
+        switch (whichStepToDo){
+            case 1:
+                window.draw(enterNumOfPlayersText);
+                textboxForNumOfPlayers.drawTo(window);
+                break;
+            case 2:
+                window.draw(enterPlayerNameText);
+                textboxForName.drawTo(window);
+                break;
+            default:
+                cout << "Bug in setUp window";
+                break;
+        }
         window.display();
     }
-    return 0;
+    return stringToInjectIntoCin;
 }

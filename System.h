@@ -28,6 +28,8 @@ private:
     bool isGameFinished;
 
     GUImanager manager;
+    sf::RenderWindow* windowUsed;
+    bool isWithGUI;
 
 /**backend consts */
     const static int blackJackWinnerNum = 21;
@@ -57,6 +59,7 @@ private:
     void createPlayers(int numOfPlayers);
     void createRealPlayer();
     void createAIPlayers(int numOfPlayers);
+    int getNumberOfPlayers() const;
 
 
     void playResults();
@@ -82,18 +85,22 @@ private:
 public:
     /**GUI realted stuff */
     void setGameWindow(sf::RenderWindow& window);
-    void drawSetupWindow(sf::RenderWindow& window);
+    void drawSetupWindow(sf::RenderWindow& window) const;
     void createAIPlayerTextObjects(int numOfAIPlayers);
     void createGameStatObjects();
-    void drawStatsTextObjects(sf::RenderWindow& window);
+    void drawStatsTextObjects(sf::RenderWindow& window) const;
+    void drawPlayerLocations(sf::RenderWindow& window) const;
+    void render(sf::RenderWindow& window) const;
 
+
+    //TODO: move this into a CPP
     void loadFiles(){
         manager.addFont("marlboroFont", "C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Marlboro.ttf");
         manager.addFont("westernFont", "C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Old Town Regular.ttf");
     }
 
     /** Constructor for the System class. Doesn't create its own deck so that any sort of and amount of cards can be played. */
-    explicit System(std::queue<std::unique_ptr<Card>> deck, int numOfPlayers);
+    System(std::queue<std::unique_ptr<Card>> deck, sf::RenderWindow* window, bool isWithGUI = false);
 
 
 
@@ -115,6 +122,13 @@ public:
  * @return shuffled card deck
  */
 std::queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
+
+/**
+ * Function that calculates where to locate AI players on the window
+ * @param AI player to locate
+ * @return Vector of the location
+ */
+sf::Vector2<float> calculateWhereToLocatePlayer(int i);
 
 
 #endif //CARDGAME_SYSTEM_H

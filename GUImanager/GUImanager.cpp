@@ -18,12 +18,12 @@ void GUImanager::addFont(const string &fontName, const string &fullFilePath) {
 }
 
 
-const sf::Font& GUImanager::getFont(const string &fontName){
+const sf::Font& GUImanager::getFont(const string &fontName) const{
     if(!checkKey(fontName, fontMap)){
         cout << "Font does not exist" << endl;
         throw logic_error("Font does not exist");
     }
-    return *(fontMap[fontName]);
+    return *(fontMap.at(fontName));
 }
 
 void GUImanager::addTextObject(const string &objectName, const sf::Text &textObject, int mapKey) {
@@ -42,12 +42,12 @@ void GUImanager::addTextObject(const string &objectName, const sf::Text &textObj
 
 }
 
-sf::Text& GUImanager::getTextObject(const string &objectName) {
+sf::Text& GUImanager::getTextObject(const string &objectName) const{
     if(!checkKey(objectName, textSetupObjectsMap)){
         cout << "TextObject does not exist" << endl;
         throw logic_error("TextObject does not exist");
     }
-    return *(textSetupObjectsMap[objectName]);
+    return *(textSetupObjectsMap.at(objectName));
 }
 
 void GUImanager::drawStatTextObjects(sf::RenderWindow &window) const {
@@ -69,8 +69,35 @@ void GUImanager::addTexture(const string &textureName, const sf::Texture &textur
     textureMap[textureName] = move(temp);
 }
 
-void GUImanager::drawBackground(sf::RenderWindow &window) {
+void GUImanager::drawBackground(sf::RenderWindow &window) const {
     window.draw(background);
+}
+
+void GUImanager::addPlayer(const string &playerName, float x, float y) {
+    unique_ptr<sf::Vector2<float>> temp (new sf::Vector2<float>(x,y));
+    playerLocationMap[playerName] = move(temp);
+}
+
+void GUImanager::addPlayer(const string &playerName,const sf::Vector2<float>& playerLocation) {
+    unique_ptr<sf::Vector2<float>> temp (new sf::Vector2<float>(playerLocation));
+    playerLocationMap[playerName] = move(temp);
+}
+
+
+sf::Vector2<float> GUImanager::getPlayerLocation(const string &playerName) const {
+    if(!checkKey(playerName, playerLocationMap)){
+        cout << "Player Location does not exist" << endl;
+        throw logic_error("Player Location does not exist");
+    }
+    return *(playerLocationMap.at(playerName));
+}
+
+void GUImanager::drawPlayerLocations(sf::RenderWindow &window) const {
+    sf::CircleShape playerCircle(5);
+    for (const auto& player : playerLocationMap){
+        playerCircle.setPosition(getPlayerLocation(player.first));
+        window.draw(playerCircle);
+    }
 }
 
 
