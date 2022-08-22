@@ -23,16 +23,9 @@ private:
 
     std::unordered_map<std::string, std::unique_ptr<sf::Vector2<float>>> playerLocationMap;
 
+    std::vector<std::unique_ptr<sf::Sprite>> cardSpritesVector;
+
     sf::Sprite background;
-
-
-
-
-
-
-
-
-
 
 public:
 
@@ -54,15 +47,11 @@ public:
 
 
     void addTextObject(const std::string &objectName, const sf::Text &textObject, int mapKey);
-    sf::Text& getTextObject(const std::string& objectName) const;
+    sf::Text& getTextSetupObject(const std::string& objectName);
+    sf::Text& getTextStatObject(const std::string &objectName);
 
-    void drawSetupTextObjects(sf::RenderWindow& window) const {
-        for (auto& textObjects : textSetupObjectsMap)
-            window.draw(*(textObjects.second));
-    }
-
+    void drawSetupTextObjects(sf::RenderWindow& window) const;
     void drawStatTextObjects(sf::RenderWindow& window) const;
-
 
     void addTexture(const std::string &textureName, const sf::Texture &textureObject);
 
@@ -77,6 +66,14 @@ public:
     sf::Vector2<float> getPlayerLocation(const std::string& playerName) const;
     //for testing only
     void drawPlayerLocations(sf::RenderWindow& window) const;
+
+    void addCardSprite(const sf::Sprite& cardSprite);
+    void editCardSprite(const sf::Sprite& careSprite);
+    void drawCardSprites(sf::RenderWindow& window) const;
+
+
+    void emptyDeck();
+    void updateStatsObjects();
 };
 
 

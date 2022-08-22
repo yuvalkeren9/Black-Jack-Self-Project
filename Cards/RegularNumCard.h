@@ -10,11 +10,11 @@
 class RegularNumCard : public Card {
 public:
     RegularNumCard(int value, CardShape cardShape) : Card(value, cardShape) {
-        setImage();
+        setTexture();
     };
 
 private:
-    void setImage();
+    void setTexture();
 
 };
 

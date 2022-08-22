@@ -17,6 +17,8 @@
 #include "Players/RealPlayer.h"
 #include "Players/AIPlayer.h"
 #include "Cards/RegularNumCard.h"
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -54,18 +56,26 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
 
 System::System(std::queue<std::unique_ptr<Card>> deck, sf::RenderWindow* window, bool isWithGUI) : cardDeck(std::move(deck)), PlayersVector(), dealer("Dealer")
 , isGameFinished(false), windowUsed(window), isWithGUI(isWithGUI) {
-    int numOfPlayers = getNumberOfPlayers();
+    int numOfPlayers = getNumberOfDesiredPlayers();
     createPlayers(numOfPlayers);
     addPlayersToBank();
+    if (isWithGUI) {
+        loadFiles();
+        setGameWindow();
+        createGameStatObjects();
+    }
 }
-
-
 
 void System::dealStartingCards() {
     for (auto& player: this->PlayersVector){
         if (player->getIsAlive()) {
             for (int i = 0; i < amountOfStartingCards; ++i) {
                 hitAPlayer(player.get());
+                if(isWithGUI){
+                    windowUsed->clear();
+                    render(*windowUsed);
+                    windowUsed->display();
+                }
             }
         }
     }
@@ -114,7 +124,12 @@ bool System::checkPlayerForBlackJack(Player *player) {
         if(player->getAmountOfCardsInHand() == amountOfStartingCards) {
             processBet(player->getName(), naturalBlackjack);
             player->setIsAlive(false);
-            cout << "Player " << *player << " has a Natural BlackJack!" << endl;
+            cout << "Player " << *player << " has a BlackJack!" << endl;
+            if(isWithGUI){
+                string announcement = "Player " + player->getName() +" has a blackJack!";
+                announce(announcement, 3);
+            }
+
         }
         return true;
     }
@@ -124,6 +139,9 @@ bool System::checkPlayerForBlackJack(Player *player) {
 bool System::checkDealerForNaturalBlackJack() {
     if(dealer.getCurrentHandSum() == blackJackWinnerNum){
         cout << "The dealer has a Natural BlackJack!" << endl;
+        if(isWithGUI){
+            announce("The dealer has a Natural BlackJack!", 3);
+        }
         for (auto& player : PlayersVector){
             checkPlayerForBlackJack(player.get());
         }
@@ -135,11 +153,11 @@ bool System::checkDealerForNaturalBlackJack() {
 }
 
 void System::hitAPlayer(Player* player) {
-    player->hit(this->cardDeck.front().get());   //giving the player a regular C pointer of a card
+    const auto& currentCard = this->cardDeck.front().get();
+    player->hit(currentCard);   //giving the player a regular C pointer of a card
     moveFirstCardToEndOfDeck();
     if(isWithGUI){
-        //TODO: the below function
-        // hitAPlayerGUI();
+         hitAPlayerGUI(player, currentCard);
     }
 }
 
@@ -147,26 +165,42 @@ bool System::makeMove(Player* player){
     if(checkPlayerForBlackJack(player)){
         return false;
     }
+    std::streambuf* orig = std::cin.rdbuf();
+    if(isWithGUI){
+        RealPlayer* realPlayerPtr = dynamic_cast<RealPlayer*>(player);       //second time breaking inhertiance (and final time)
+        if (realPlayerPtr != nullptr) {             //is the current player a real player
+            string actionAsString = realPlayerChooseActionGUI(sf::Vector2<float>(500,500));
+            std::istringstream input(actionAsString);
+            std::cin.rdbuf(input.rdbuf());
+        }
+    }
     Action action = player->chooseAction();
+    std::cin.rdbuf(orig);
+    bool canAnotherMoveBePlayed;
         switch(static_cast<int>(action)){
             case 0:
                 cout<< "hitting player..." << *player << endl;
                 hitAPlayer(player);
                 if(player->getCurrentHandSum() > 21) {
                     cout << "Youre over 21, youre out!!" << endl;
-                    return false;
+                    canAnotherMoveBePlayed = false;
+                    break;
                 }
                 else {
                     cout << "your current sum is:" << player->getCurrentHandSum() << endl;
-                    return true;
+                    canAnotherMoveBePlayed = true;
+                    break;
                 }
             case 1:
                 cout<< "the following player decided to stand" << *player << endl;
-                return false;
+                canAnotherMoveBePlayed = false;
+                break;
             default:
                 cout << "shit man something has gone way way wrong";
                 exit(0);
+
         }
+    return canAnotherMoveBePlayed;
 }
 
 void System::playDealerTurn() {
@@ -196,16 +230,32 @@ void System::playResults() {
         if (dealerSum == currentPlayerSum ){
             processBet(currentPlayerName, tie);
             cout << "Player " << *player << " is tied with the dealer!" << endl;
-            continue;
+            if(isWithGUI){
+                string announcement = "Player " + player->getName() + " is tied with the dealer!";
+                announce(announcement, 1);
+            }
         }
-        if (dealerSum > currentPlayerSum){
+        else if (dealerSum > currentPlayerSum){
             cout << "Player " << *player << " has lost to the dealer!" << endl;
-            continue;
+            if(isWithGUI){
+                string announcement = "Player " + player->getName() + " has lost to the dealer!";
+                announce(announcement, 1);
+            }
+//            continue;
         }
         else{                                     //player's sum is higher than dealer's
             processBet(currentPlayerName, regular);
             cout << "Player " << *player << " beat the dealer!" << endl;
-            continue;
+            if(isWithGUI){
+                string announcement = "Player " + player->getName() + " beat the dealer!";
+                announce(announcement, 1);
+            }
+//            continue;
+        }
+
+        if(isWithGUI) {
+            string playerName = player->getName();
+            manager.getTextStatObject("currentSumTextPlayer" + playerName).setString(to_string(bank.getPlayersMoney(playerName)));
         }
     }
 }
@@ -232,6 +282,10 @@ void System::collectStartingBets() {
         else{
             currentRoundBetsMap[currentPlayerName] = startingBet;
             bank.decreaseMoney(currentPlayerName, startingBet);
+        }
+        if(isWithGUI) {
+            string playerName = player->getName();
+            manager.getTextStatObject("currentSumTextPlayer" + playerName).setString(to_string(bank.getPlayersMoney(playerName)));
         }
     }
 }
@@ -269,7 +323,6 @@ void System::processBet(const string& playerName, BetType betType ){
         default:
             cout << "BAD BAD BAD" <<endl;
             exit(0);
-            return;
     }
 }
 
@@ -290,7 +343,11 @@ void System::endOfRoundDealerBust(){
 }
 
 void System::endOfRoundPlayerBust(const string& playerName) {
-    cout << playerName << " has a bust! He loses" << endl;
+    cout << playerName << " has a bust! He (or she) loses" << endl;
+    if(isWithGUI){
+        string announcement = "Player " + playerName +" has a bust! He (or she) loses";
+        announce(announcement, 3);
+    }
 }
 
 
@@ -301,6 +358,9 @@ void System::endRound() {
         player->emptyDeck();
     }
     dealer.emptyDeck();    //empty dealer card deck
+    if(isWithGUI){
+        manager.emptyDeck();
+    }
     checkAlivenessOfPLayers();
 }
 
@@ -308,8 +368,12 @@ void System::endRound() {
 void System::createPlayers(int numOfPlayers) {
     createRealPlayer();
     createAIPlayers(numOfPlayers);
+    //adding dealer to manager
+    manager.addPlayer("Dealer", 600, 100);
     if(isGameFinished) {
+        windowUsed->clear();
         render(*windowUsed);
+        windowUsed->display();
     }
 }
 
@@ -319,18 +383,20 @@ void System::createRealPlayer() {
         cout << "Please select a name:" << endl;
     }
     getline(cin, inputFromUser);
-    manager.addPlayer(inputFromUser, 600, 700);
+    manager.addPlayer(inputFromUser, 250, 550);
     PlayersVector.push_back(unique_ptr<Player> (new RealPlayer(inputFromUser)));
 }
 
 void System::createAIPlayers(int numOfPlayers) {
-    //TODO: compare name to REALPLAYER name before choosing it
     vector<string> vectorOfPossibleNames = {"Azula", "Zuko", "Uncle Iroh", "Ty Lee", "Scary Scar Guy", "Fire Lord Ozai",
                                             "Hama the Blood Bender", "Mai", "Appa", "Long Feng", "Jet", "Cabbage Man"};
     unsigned num = chrono::system_clock::now().time_since_epoch().count();    //generating a random number for shuffle function
     shuffle(vectorOfPossibleNames.begin(), vectorOfPossibleNames.end(), default_random_engine(num));
     for (int i=1 ; i < numOfPlayers; ++i){
         string playerName = vectorOfPossibleNames[i];
+        if(PlayersVector[0]->getName() == playerName){ //checking that the Real player didn't use one of the names here.
+            playerName = vectorOfPossibleNames.at(i+numOfPlayers); //If the player did pick a name, pick a different one outside the picking scope
+        }
         sf::Vector2<float> playerLocation = calculateWhereToLocatePlayer(i);
         manager.addPlayer(playerName, playerLocation);
         PlayersVector.push_back(unique_ptr<Player> (new AIPlayer(playerName)));
@@ -396,12 +462,14 @@ void System::removePlayer(Player *player) {
     for(auto it = PlayersVector.begin(); it != PlayersVector.end(); ++it){
         const string currentPlayerName= (*it)->getName();
         if (currentPlayerName == player->getName()){
+            //TODO: forshadow with gui
             bank.removePlayerFromBank(currentPlayerName);
             PlayersVector.erase(it);
             return;
         }
     }
 }
+
 
 
 

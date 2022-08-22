@@ -19,7 +19,7 @@ private:
 
 protected:
     int value;
-    sf::Image cardImage;
+    sf::Texture cardTexture;
 public:
     virtual void print(std::ostream& os) const;
     Card(int value, CardShape type) : value(value), type(type) {};
@@ -32,7 +32,7 @@ public:
 
 
     /** GUI related stuff */
-    const sf::Image& getImage() const;   //maybe refrence is a problem
+    const sf::Texture & getTexture() const;   //maybe refrence is a problem
 
 };
 

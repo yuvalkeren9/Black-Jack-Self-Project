@@ -9,11 +9,11 @@
 using namespace std;
 
 
-void RegularNumCard::setImage() {
+void RegularNumCard::setTexture() {
     string cardShapeString = getCardShapeAsString();
     string startOfFileText = "../GUIfiles/Sprites/Cards/card";
     string cardValue = to_string(getValue());
     string pngEnding = ".png";
     string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
-    cardImage.loadFromFile(fileName);
+    cardTexture.loadFromFile(fileName);
 }

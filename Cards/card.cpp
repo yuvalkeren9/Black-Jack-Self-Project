@@ -64,8 +64,8 @@ string Card::getCardShapeAsString() {
     return cardShapeString;
 }
 
-const sf::Image& Card::getImage() const {
-    return cardImage;
+const sf::Texture & Card::getTexture() const {
+    return cardTexture;
 }
 
 

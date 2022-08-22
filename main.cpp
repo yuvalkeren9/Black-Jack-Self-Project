@@ -12,54 +12,44 @@ using namespace std;
 /** Functions to help set up GUI system*/
 string getPlayerSettingAsString(sf::RenderWindow& window);
 
-//
-//int main() {
-//    /** Creating game window */
-//    sf::RenderWindow window(sf::VideoMode(1200, 880), "BlackJack game");
-//    sf::RenderWindow* windowPtr = &window;
-//
-//
-//    /** setting up system */
-//
-//    std::streambuf* orig = std::cin.rdbuf();
-//    string stringToInjectIntoCin = getPlayerSettingAsString(window);
-//    std::istringstream input(stringToInjectIntoCin);
-//    std::cin.rdbuf(input.rdbuf());
-//    System s(createRegularCardDeck(1),windowPtr, true);
-//    std::cin.rdbuf(orig);
-//
-//
-//    /**Loading Files*/
-//    s.loadFiles();
-//
-//
-//
-//    /** settting up starting window*/
-//    s.setGameWindow(window);
-//    s.createGameStatObjects();
-//
-//
-//    while (window.isOpen()){
-//        sf::Event event;
-//
-//        while (window.pollEvent(event)){
-//            if (event.type == sf::Event::Closed)
-//                window.close();
-//        }
-//        //s.playRound();
-//        window.clear();
-//        s.drawSetupWindow(window);
-//        s.drawStatsTextObjects(window);
-//        s.drawPlayerLocations(window);
-//        window.display();
-//    }
-//    return 0;
-//}
 
-int main(){
-        System s(createRegularCardDeck(1),nullptr);
-        while(s.playRound());
-};
+
+int main() {
+    /** Creating game window */
+    sf::RenderWindow window(sf::VideoMode(1200, 880), "BlackJack game");
+    sf::RenderWindow* windowPtr = &window;
+
+
+    /** setting up system */
+
+    std::streambuf* orig = std::cin.rdbuf();
+    string stringToInjectIntoCin = getPlayerSettingAsString(window);
+    std::istringstream input(stringToInjectIntoCin);
+    std::cin.rdbuf(input.rdbuf());
+    System s(createRegularCardDeck(1),windowPtr, true);
+    std::cin.rdbuf(orig);
+
+    while (window.isOpen()){
+        sf::Event event;
+
+        while (window.pollEvent(event)){
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+        s.playRound();
+        window.clear();
+        s.drawSetupWindow(window);
+        s.drawStatsTextObjects(window);
+        s.drawPlayerLocations(window);
+        window.display();
+    }
+    return 0;
+}
+//
+//int main(){
+//        System s(createRegularCardDeck(1),nullptr);
+//        while(s.playRound());
+//};
 
 
 

@@ -25,13 +25,13 @@ void AceCard::changeAceValue() {
     }
 }
 
-void AceCard::setImage() {
+void AceCard::setTexture() {
     string cardShapeString = getCardShapeAsString();
     string startOfFileText = "../GUIfiles/Sprites/Cards/card";
     string cardValue = "A";
     string pngEnding = ".png";
     string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
-    cardImage.loadFromFile(fileName);
+    cardTexture.loadFromFile(fileName);
 
 }
 

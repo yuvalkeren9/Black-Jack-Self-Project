@@ -4,6 +4,8 @@
 
 #include "GUImanager.h"
 
+#include <memory>
+
 using namespace std;
 
 
@@ -39,16 +41,25 @@ void GUImanager::addTextObject(const string &objectName, const sf::Text &textObj
             cout << "No such map!" << endl;
             throw logic_error("no such map");
     }
-
 }
 
-sf::Text& GUImanager::getTextObject(const string &objectName) const{
+
+sf::Text& GUImanager::getTextSetupObject(const string &objectName) {
     if(!checkKey(objectName, textSetupObjectsMap)){
         cout << "TextObject does not exist" << endl;
         throw logic_error("TextObject does not exist");
     }
     return *(textSetupObjectsMap.at(objectName));
 }
+
+sf::Text& GUImanager::getTextStatObject(const string &objectName){
+    if(!checkKey(objectName, textStatsObjectsMap)){
+        cout << "TextObjectStat does not exist" << endl;
+        throw logic_error("TextObjectTextObjectStat does not exist");
+    }
+    return *(textStatsObjectsMap.at(objectName));
+}
+
 
 void GUImanager::drawStatTextObjects(sf::RenderWindow &window) const {
     for (auto& textObjects : textStatsObjectsMap)
@@ -100,6 +111,33 @@ void GUImanager::drawPlayerLocations(sf::RenderWindow &window) const {
     }
 }
 
+
+void GUImanager::drawSetupTextObjects(sf::RenderWindow& window) const{
+    for (auto& textObjects : textSetupObjectsMap)
+        window.draw(*(textObjects.second));
+}
+
+void GUImanager::addCardSprite(const sf::Sprite &cardSprite) {
+    cardSpritesVector.push_back(std::make_unique<sf::Sprite> (cardSprite));
+}
+
+void GUImanager::drawCardSprites(sf::RenderWindow &window) const {
+    for (const auto& cards : cardSpritesVector){
+        window.draw(*cards);
+    }
+}
+
+void GUImanager::emptyDeck() {
+    while (!cardSpritesVector.empty()){
+        cardSpritesVector.pop_back();
+    }
+}
+
+//void GUImanager::editCardSprite(const sf::Sprite &careSprite, float x, float y) {
+//
+//
+//
+//}
 
 
 

@@ -7,13 +7,13 @@
 
 using namespace std;
 
-void RoyaltyCard::setImage() {
+void RoyaltyCard::setTexture() {
     string cardShapeString = getCardShapeAsString();
     string startOfFileText = "../GUIfiles/Sprites/Cards/card";
     string cardValue = getCardTypeAsString();
     string pngEnding = ".png";
     string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
-    cardImage.loadFromFile(fileName);
+    cardTexture.loadFromFile(fileName);
 
 }
 
