@@ -133,20 +133,19 @@ void GUImanager::emptyDeck() {
     }
 }
 
-//void GUImanager::editCardSprite(const sf::Sprite &careSprite, float x, float y) {
-//
-//
-//
-//}
+const sf::Texture &GUImanager::getTexture(const string &textureName) const {
+    if(!checkKey(textureName, textureMap)){
+        cout << "Texture does not exist" << endl;
+        throw logic_error("Texture does not exist");
+    }
+    return *(textureMap.at(textureName));
+}
 
-
-
-//bool checkKey (const std::string& key, const std::unordered_map<std::string, std::unique_ptr<sf::Font>> &map) {
-//    if (map.find(key) == map.end()) {
-//        return false; //Key is not in the map
-//    }
-//    return true; //Key is in the map
-//}
-
-/** helper functions */
+sf::Sprite& GUImanager::getCardSprite(int num) {
+    if (num > cardSpritesVector.size() || num < 0){
+        throw range_error("card does not exists");
+    }
+    --num;
+    return *(cardSpritesVector.at(num));
+}
 

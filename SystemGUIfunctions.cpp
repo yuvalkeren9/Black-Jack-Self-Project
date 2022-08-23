@@ -258,6 +258,16 @@ void System::hitAPlayerGUI(Player *player, Card* card) {
         manager.getTextStatObject("currentSumTextRealPlayer").setString(to_string(player->getCurrentHandSum()));
 
     }
+    else{                      //is dealer
+        if (player->getAmountOfCardsInHand() == 2){    //if this is the dealer's second card, then there are special blackjack rules to follow
+            sf::Texture backOfCard;
+            if(!backOfCard.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/Cards/cardBack_blue5.png")){
+                cout << "failed to load back card texture!";
+            }
+            manager.addTexture("backCardTexture", backOfCard);
+            cardSprite.setTexture(manager.getTexture("backCardTexture"));
+        }
+    }
     const sf::Vector2<float>& startingPosition = manager.getPlayerLocation(player->getName());
     sf::Vector2<float> locateCardAt = calculateWhereToDealCardAIPlayer(startingPosition,
                                                                        cardSprite, numberOfCards, sizeOfCardDivisionOffset, isAI);
@@ -272,9 +282,15 @@ sf::Vector2<float> calculateWhereToDealCardAIPlayer(const sf::Vector2<float>& st
                                                     int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI ){
     --numberOfCardsInPlayerHand;
     sf::Vector2<float> locateAt = startingPosition;
-    if(isAI && 2< numberOfCardsInPlayerHand){
-        locateAt.y += (cardSprite.getLocalBounds().height/sizeOfCardDivisionOffset) + 10;
+    if(2< numberOfCardsInPlayerHand) {
+        if (isAI) {
+            locateAt.y += (cardSprite.getLocalBounds().height / sizeOfCardDivisionOffset) + 10;     //add an offset to start a second row
+        }
+        else{
+            locateAt.y -= (cardSprite.getLocalBounds().height/2 / sizeOfCardDivisionOffset) - 30; //real player,adding offset that starts a second row
+        }
     }
+
     numberOfCardsInPlayerHand = numberOfCardsInPlayerHand % 3;
     locateAt.x += (((cardSprite.getLocalBounds().width/sizeOfCardDivisionOffset) + 10 )*numberOfCardsInPlayerHand);
     return  locateAt;
@@ -282,31 +298,36 @@ sf::Vector2<float> calculateWhereToDealCardAIPlayer(const sf::Vector2<float>& st
 
 
 string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButtons){
+    const int textButtonOffsetY = 25;
     sf::RectangleShape hitButton;
     hitButton.setPosition(positionToLocateButtons);
-    hitButton.setSize(sf::Vector2<float>(200,200));
+    hitButton.setSize(sf::Vector2<float>(100,50));
     hitButton.setOutlineColor(sf::Color::Black);
     hitButton.setFillColor(sf::Color::Green);
-    hitButton.setOutlineThickness(10);
+    hitButton.setOutlineThickness(3);
     sf::Rect<float> hitButtonRect = hitButton.getGlobalBounds();
 
 
     sf::RectangleShape standButton;
-    standButton.setPosition(positionToLocateButtons.x - hitButton.getLocalBounds().height, positionToLocateButtons.y);
-    standButton.setSize(sf::Vector2<float>(200,200));
+    standButton.setPosition(positionToLocateButtons.x , positionToLocateButtons.y + hitButton.getLocalBounds().height);
+    standButton.setSize(sf::Vector2<float>(100,50));
     standButton.setFillColor(sf::Color::Green);
     standButton.setOutlineColor(sf::Color::Black);
+    standButton.setOutlineThickness(3);
     sf::Rect<float> standButtonRect = standButton.getGlobalBounds();
 
     const sf::Font& marlboro = manager.getFont("marlboroFont");
 
-    sf::Text hitTexT("Hit", marlboro);
-    hitTexT.setFillColor(sf::Color::Black);
-    hitTexT.setPosition(positionToLocateButtons);
+    sf::Text hitText("Hit", marlboro);
+    hitText.setFillColor(sf::Color::Black);
+    hitText.setPosition(positionToLocateButtons.x +hitButton.getLocalBounds().width/2 - hitText.getLocalBounds().width/2,
+                        positionToLocateButtons.y + hitButton.getLocalBounds().height/2 - hitText.getLocalBounds().height);
 
-    sf::Text standTexT("Stand", marlboro);
-    standTexT.setFillColor(sf::Color::Black);
-    standTexT.setPosition(positionToLocateButtons.x - hitButton.getLocalBounds().height, positionToLocateButtons.y);
+    sf::Text standText("Stand", marlboro);
+    standText.setFillColor(sf::Color::Black);
+    standText.setPosition(positionToLocateButtons.x + (standButton.getLocalBounds().width /2 - standText.getLocalBounds().width/2),
+                          positionToLocateButtons.y + hitButton.getLocalBounds().height + standButton.getLocalBounds().height/2
+                          - standText.getLocalBounds().height );
 
     sf::RenderWindow& window (*windowUsed);
 
@@ -335,8 +356,8 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
         render(*windowUsed);
         windowUsed->draw(hitButton);
         windowUsed->draw(standButton);
-        windowUsed->draw(hitTexT);
-        windowUsed->draw(standTexT);
+        windowUsed->draw(hitText);
+        windowUsed->draw(standText);
 
         windowUsed->display();
     }
@@ -346,10 +367,17 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
 void System::announce(const string &announcement, float delay) {
     const sf::Font& marlboro = manager.getFont("marlboroFont");
     sf::Text text(announcement,marlboro, 30);
-    text.setPosition(600,600);
+    text.setOrigin(text.getGlobalBounds().width/2, text.getGlobalBounds().height/2);
+    text.setPosition(600,440);
     windowUsed->clear();
     render(*windowUsed);
     windowUsed->draw(text);
     windowUsed->display();
     sf::sleep(sf::seconds(delay));
+}
+
+void System::flipDealerSecondCard() {
+    int amountOfPlayersInGame = PlayersVector.size();
+    sf::Sprite& secondDealerCardSprite = manager.getCardSprite(amountOfPlayersInGame*2 + 2) ; //dealer second card
+    secondDealerCardSprite.setTexture()
 }

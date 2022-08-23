@@ -109,6 +109,7 @@ bool System::playRound() {
     for (auto& player: this->PlayersVector){
         while(makeMove(player.get()));     //makeMove returns false when player decides to stand or is over 21
     }
+    //TODO: dealer has a bust
     playDealerTurn();
     playResults();
     endRound();
@@ -140,6 +141,7 @@ bool System::checkDealerForNaturalBlackJack() {
     if(dealer.getCurrentHandSum() == blackJackWinnerNum){
         cout << "The dealer has a Natural BlackJack!" << endl;
         if(isWithGUI){
+            flipDealerSecondCard();
             announce("The dealer has a Natural BlackJack!", 3);
         }
         for (auto& player : PlayersVector){
@@ -169,7 +171,7 @@ bool System::makeMove(Player* player){
     if(isWithGUI){
         RealPlayer* realPlayerPtr = dynamic_cast<RealPlayer*>(player);       //second time breaking inhertiance (and final time)
         if (realPlayerPtr != nullptr) {             //is the current player a real player
-            string actionAsString = realPlayerChooseActionGUI(sf::Vector2<float>(500,500));
+            string actionAsString = realPlayerChooseActionGUI(sf::Vector2<float>(50,765));
             std::istringstream input(actionAsString);
             std::cin.rdbuf(input.rdbuf());
         }
@@ -335,9 +337,11 @@ void System::processBet(const string& playerName, BetType betType ){
 /** dealer related functions */
 void System::endOfRoundDealerBust(){
     cout << "The dealer has busted! All players who do not have a bust themselves win!" << endl;
+    announce("Dealer has busted! All player who did not bust win!");
     for (auto& player : this->PlayersVector){
         if(player->getCurrentHandSum() <= blackJackWinnerNum && player->getIsAlive()){ //player did not bust
             processBet(player->getName(), regular);
+            announce("Player " + player->getName() + " has beat the dealer!");
         }
     }
 }
@@ -369,7 +373,7 @@ void System::createPlayers(int numOfPlayers) {
     createRealPlayer();
     createAIPlayers(numOfPlayers);
     //adding dealer to manager
-    manager.addPlayer("Dealer", 600, 100);
+    manager.addPlayer("Dealer", 250, 80);
     if(isGameFinished) {
         windowUsed->clear();
         render(*windowUsed);

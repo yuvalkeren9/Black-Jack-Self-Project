@@ -54,6 +54,7 @@ public:
     void drawStatTextObjects(sf::RenderWindow& window) const;
 
     void addTexture(const std::string &textureName, const sf::Texture &textureObject);
+    const sf::Texture& getTexture(const std::string& textureName) const;
 
 
     void setBackground(const std::string& filePath);
@@ -68,7 +69,7 @@ public:
     void drawPlayerLocations(sf::RenderWindow& window) const;
 
     void addCardSprite(const sf::Sprite& cardSprite);
-    void editCardSprite(const sf::Sprite& careSprite);
+    sf::Sprite& getCardSprite(int num);
     void drawCardSprites(sf::RenderWindow& window) const;
 
 
