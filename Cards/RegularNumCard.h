@@ -9,12 +9,9 @@
 
 class RegularNumCard : public Card {
 public:
-    RegularNumCard(int value, CardShape cardShape) : Card(value, cardShape) {
-        setTexture();
-    };
-
+    RegularNumCard(int value, CardShape cardShape) : Card(value, cardShape) {};
+    std::string getCardFullNameAsString() const override;
 private:
-    void setTexture();
 
 };
 

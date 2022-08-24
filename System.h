@@ -41,6 +41,7 @@ private:
 
     enum BetType  {regular, naturalBlackjack, tie};
 
+
     //functions that are used when setting up the system, and the start of a round
 
     /**
@@ -183,6 +184,8 @@ public:
      */
     bool playRound();
 
+    class terminateSystem;
+
 
 
     /**GUI related stuff */
@@ -194,10 +197,13 @@ public:
     void drawPlayerLocations(sf::RenderWindow& window) const;
     void hitAPlayerGUI(Player* player, Card* card);
     void animateCardDealt(const sf::Vector2<float> startingPosition, const sf::Vector2<float> endingPosition,
-                          sf::Sprite& cardSprite, sf::RenderWindow& window);
+                          sf::Sprite& cardSprite, sf::RenderWindow& window) const;
     std::string realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButtons);
     void announce(const std::string &announcement, float delay = 3);
     void render(sf::RenderWindow& window) const;
+    void createCardTexture(Card*& card);
+
+    void updateScreen() const;
 
 
    /**
@@ -212,6 +218,7 @@ public:
     void printBankDetails() const;
     int getPlayersCurrentMoney(int numberOfPlayer) const;
 
+    void flipDealerSecondCard();
 };
 
 
@@ -230,8 +237,8 @@ std::queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
  */
 sf::Vector2<float> calculateWhereToLocatePlayer(int i);
 
-sf::Vector2<float> calculateWhereToDealCardAIPlayer(const sf::Vector2<float>& startingPosition, const sf::Sprite& cardSprite,
-                                                    int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI );
+sf::Vector2<float> calculateWhereToDealCard(const sf::Vector2<float>& startingPosition, const sf::Sprite& cardSprite,
+                                            int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI );
 
 
 #endif //CARDGAME_SYSTEM_H

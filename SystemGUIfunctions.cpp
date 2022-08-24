@@ -5,8 +5,17 @@
 #include "System.h"
 #include "Players/RealPlayer.h"
 #include "GUImanager/Textbox.h"
+#include <exception>
 
 using namespace std;
+
+class System::terminateSystem : public exception{
+public:
+    terminateSystem() = default;
+    const char *what() const noexcept override {
+        return "Exiting program, cleanly";
+    }
+};
 
 void System::setGameWindow() {
     manager.setBackground("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/pokerGameBackground.jpg");
@@ -174,11 +183,10 @@ int System::getNumberOfDesiredPlayers() const {
     return stoi(temp);
 }
 
-//TODO: make this a global function
+
 void System::render(sf::RenderWindow &window) const {
     drawSetupWindow(window);
     drawStatsTextObjects(window);
-    manager.drawPlayerLocations(window);
     manager.drawCardSprites(window);
 }
 
@@ -221,20 +229,28 @@ void System::loadFiles(){
     manager.addFont("westernFont", "C:/Program Files/clionprojects/cardgame/GUIfiles/Fonts/Old Town Regular.ttf");
 }
 
+
+
 //TODO: make this a global function (maybe)
-void System::animateCardDealt(const sf::Vector2<float> startingPosition, const sf::Vector2<float> endingPosition, sf::Sprite& cardSprite, sf::RenderWindow& window) {
+void System::animateCardDealt(const sf::Vector2<float> startingPosition, const sf::Vector2<float> endingPosition, sf::Sprite& cardSprite, sf::RenderWindow& window) const {
     cardSprite.setPosition(startingPosition);
     float xDistance = endingPosition.x - startingPosition.x;
     float yDistance = endingPosition.y - startingPosition.y;
     float xVelocity = (xDistance / 500);
     float yVelocity = (yDistance / 500);
+    sf::Event closedEvent;
     for (int i =0; i < 500; ++i) {
-        cardSprite.move(xVelocity, yVelocity);
-        window.clear();
-        render(window);
-        window.draw(cardSprite);
-        window.display();
-    }
+        while (window.pollEvent(closedEvent)) {
+            if (closedEvent.type == sf::Event::Closed) {
+                throw System::terminateSystem();
+            }
+        }
+            cardSprite.move(xVelocity, yVelocity);
+            window.clear();
+            render(window);
+            window.draw(cardSprite);
+            window.display();
+        }
 }
 
 
@@ -242,19 +258,19 @@ void System::animateCardDealt(const sf::Vector2<float> startingPosition, const s
 
 void System::hitAPlayerGUI(Player *player, Card* card) {
     int numberOfCards = player->getAmountOfCardsInHand();
-    float sizeOfCardDivisionOffset = 1;                      //this offset is for calculating correctly the width and height of a card
-    sf::Sprite cardSprite(card->getTexture());
+    float sizeOfCardDivisionOffset = 1; //this offset is for calculating correctly the width and height of a card
+    createCardTexture(card);
+    sf::Sprite cardSprite(manager.getTexture(card->getCardFullNameAsString()));
     bool isAI = false;
 
 
-    RealPlayer* realPlayerPtr = dynamic_cast<RealPlayer*>(player);         //had to "break" inheritance for GUI only. sad day ):
+    auto realPlayerPtr = dynamic_cast<RealPlayer*>(player);         //had to "break" inheritance for GUI only. sad day ):
     if (realPlayerPtr == nullptr && player->getName() != "Dealer"){ //Is an AI player
         cardSprite.scale(0.5,0.5);
         sizeOfCardDivisionOffset = 2;
         isAI = true;
     }
     else if(realPlayerPtr != nullptr){ //is a real player
-        //TODO: make the following line more readable
         manager.getTextStatObject("currentSumTextRealPlayer").setString(to_string(player->getCurrentHandSum()));
 
     }
@@ -264,22 +280,24 @@ void System::hitAPlayerGUI(Player *player, Card* card) {
             if(!backOfCard.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/Cards/cardBack_blue5.png")){
                 cout << "failed to load back card texture!";
             }
+            manager.setDealerOriginalCardTexture(manager.getTexture(card->getCardFullNameAsString()));
             manager.addTexture("backCardTexture", backOfCard);
             cardSprite.setTexture(manager.getTexture("backCardTexture"));
         }
     }
     const sf::Vector2<float>& startingPosition = manager.getPlayerLocation(player->getName());
-    sf::Vector2<float> locateCardAt = calculateWhereToDealCardAIPlayer(startingPosition,
-                                                                       cardSprite, numberOfCards, sizeOfCardDivisionOffset, isAI);
-    animateCardDealt(manager.getPlayerLocation("Dealer"),locateCardAt, cardSprite, *windowUsed);
+    sf::Vector2<float> locateCardAt = calculateWhereToDealCard(startingPosition,
+                                                               cardSprite, numberOfCards, sizeOfCardDivisionOffset, isAI);
+
+    animateCardDealt(manager.getPlayerLocation("Dealer"), locateCardAt, cardSprite, *windowUsed);
     cardSprite.setPosition(locateCardAt);
     manager.addCardSprite(cardSprite);
 }
 
 
 
-sf::Vector2<float> calculateWhereToDealCardAIPlayer(const sf::Vector2<float>& startingPosition, const sf::Sprite& cardSprite,
-                                                    int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI ){
+sf::Vector2<float> calculateWhereToDealCard(const sf::Vector2<float>& startingPosition, const sf::Sprite& cardSprite,
+                                            int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI ){
     --numberOfCardsInPlayerHand;
     sf::Vector2<float> locateAt = startingPosition;
     if(2< numberOfCardsInPlayerHand) {
@@ -298,7 +316,7 @@ sf::Vector2<float> calculateWhereToDealCardAIPlayer(const sf::Vector2<float>& st
 
 
 string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButtons){
-    const int textButtonOffsetY = 25;
+    /** creating a rectangle that will serve as a button for "Hit" command */
     sf::RectangleShape hitButton;
     hitButton.setPosition(positionToLocateButtons);
     hitButton.setSize(sf::Vector2<float>(100,50));
@@ -307,7 +325,7 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
     hitButton.setOutlineThickness(3);
     sf::Rect<float> hitButtonRect = hitButton.getGlobalBounds();
 
-
+    /** creating a rectangle that will serve as a button for "Stand" command */
     sf::RectangleShape standButton;
     standButton.setPosition(positionToLocateButtons.x , positionToLocateButtons.y + hitButton.getLocalBounds().height);
     standButton.setSize(sf::Vector2<float>(100,50));
@@ -315,6 +333,8 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
     standButton.setOutlineColor(sf::Color::Black);
     standButton.setOutlineThickness(3);
     sf::Rect<float> standButtonRect = standButton.getGlobalBounds();
+
+    /** creating text objects for hit and stand buttons */
 
     const sf::Font& marlboro = manager.getFont("marlboroFont");
 
@@ -330,35 +350,32 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
                           - standText.getLocalBounds().height );
 
     sf::RenderWindow& window (*windowUsed);
-
     while (window.isOpen()){
         sf::Event event;
 
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
-                window.close();
-                return "0";
+                throw System::terminateSystem();   //ending program
             }
             if(event.type == sf::Event::MouseButtonPressed){
                 int xCoordinatee = event.mouseButton.x;
                 int yCoordiante = event.mouseButton.y;
                 if (hitButtonRect.contains(xCoordinatee,yCoordiante )){
-                    cout << "PRESSED ON HIT BUTTON" << endl;
                     return "0";
                 }
                 if (standButtonRect.contains(xCoordinatee,yCoordiante )){
-                    cout << "PRESSED ON stand BUTTON" << endl;
                     return "1";
                 }
             }
         }
+
+        /**drawing buttons */
         windowUsed->clear();
         render(*windowUsed);
         windowUsed->draw(hitButton);
         windowUsed->draw(standButton);
         windowUsed->draw(hitText);
         windowUsed->draw(standText);
-
         windowUsed->display();
     }
     return "0";
@@ -379,5 +396,21 @@ void System::announce(const string &announcement, float delay) {
 void System::flipDealerSecondCard() {
     int amountOfPlayersInGame = PlayersVector.size();
     sf::Sprite& secondDealerCardSprite = manager.getCardSprite(amountOfPlayersInGame*2 + 2) ; //dealer second card
-    secondDealerCardSprite.setTexture()
+    secondDealerCardSprite.setTexture(manager.getDealerOriginalCardTexture());
 }
+
+void System::createCardTexture(Card *&card) {
+    sf::Texture cardTexture;
+    cardTexture.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/Cards/card" + card->getCardFullNameAsString()+".png");
+    manager.addTexture(card->getCardFullNameAsString(), cardTexture);
+}
+
+
+//TODO: remove before final version
+void System::updateScreen() const {
+    windowUsed->clear();
+    render(*windowUsed);
+    windowUsed->display();
+}
+
+

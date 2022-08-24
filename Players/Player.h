@@ -18,7 +18,7 @@ private:
 
 
 public:
-    explicit Player(std::string name, long int startingMoney = 1000) : m_playerHand(), m_name(std::move(name)), isAlive(true) {};
+    explicit Player(std::string name) : m_playerHand(), m_name(std::move(name)), isAlive(true) {};
     virtual ~Player() = default;
     void addToDeck(Card* newCard);
     void emptyDeck();

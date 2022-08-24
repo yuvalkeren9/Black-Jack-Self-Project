@@ -149,3 +149,10 @@ sf::Sprite& GUImanager::getCardSprite(int num) {
     return *(cardSpritesVector.at(num));
 }
 
+void GUImanager::setDealerOriginalCardTexture(const sf::Texture &cardTexture) {
+    dealerOriginalTexture = cardTexture;
+}
+const sf::Texture& GUImanager::getDealerOriginalCardTexture() const{
+    return dealerOriginalTexture;
+}
+

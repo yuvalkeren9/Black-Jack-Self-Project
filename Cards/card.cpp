@@ -3,16 +3,13 @@
 //
 
 #include "card.h"
-#include <fstream>
 #include <iostream>
 
 using namespace std;
 
 class Card::intToCardTypeError : public std::exception {
-private:
-    int value;
 public:
-    explicit intToCardTypeError(int value) : std::exception(), value(value) {};
+    explicit intToCardTypeError() : std::exception(){};
     const char *what() const noexcept override {
         return "Illegal number - no possible card type conversion";
     }
@@ -29,7 +26,7 @@ CardShape intToCardTypeAdapter(int value) {
         case 4:
             return Spades;
         default:
-            throw Card::intToCardTypeError(value);
+            throw Card::intToCardTypeError();
     }
 }
 
@@ -42,7 +39,7 @@ int Card::getValue() const {
 }
 
 
-string Card::getCardShapeAsString() {
+string Card::getCardShapeAsString() const {
     string cardShapeString;
     switch (static_cast<CardShape> (this->type)){
         case 0:
@@ -64,17 +61,13 @@ string Card::getCardShapeAsString() {
     return cardShapeString;
 }
 
-const sf::Texture & Card::getTexture() const {
-    return cardTexture;
-}
-
-
-string createStringForCardTypeSprite(Card& card){
-    string cardShapeString = card.getCardShapeAsString();
-    string startOfFileText = "../Sprites/Cards/card";
-    string cardValue = to_string(card.getValue());
-    string pngEnding = ".png";
-    return (startOfFileText + cardShapeString + cardValue + pngEnding);
-}
-
+//TODO: remove before final version
+//string createStringForCardTypeSprite(Card& card){
+//    string cardShapeString = card.getCardShapeAsString();
+//    string startOfFileText = "../Sprites/Cards/card";
+//    string cardValue = to_string(card.getValue());
+//    string pngEnding = ".png";
+//    return (startOfFileText + cardShapeString + cardValue + pngEnding);
+//}
+//
 

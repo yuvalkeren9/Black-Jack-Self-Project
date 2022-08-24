@@ -3,22 +3,24 @@
 //
 
 #include "System.h"
-
-
-#include "Cards/card.h"
-#include <fstream>
-#include <memory>
 #include "Cards/RoyaltyCard.h"
 #include "Cards/AceCard.h"
+#include "Players/RealPlayer.h"
+#include "Cards/RegularNumCard.h"
+
+#include <fstream>
+#include <memory>
 #include<random>
 #include <algorithm>
 #include <chrono>
 #include <cassert>
-#include "Players/RealPlayer.h"
-#include "Players/AIPlayer.h"
-#include "Cards/RegularNumCard.h"
 #include <string>
 #include <sstream>
+
+
+
+
+
 
 using namespace std;
 
@@ -109,7 +111,6 @@ bool System::playRound() {
     for (auto& player: this->PlayersVector){
         while(makeMove(player.get()));     //makeMove returns false when player decides to stand or is over 21
     }
-    //TODO: dealer has a bust
     playDealerTurn();
     playResults();
     endRound();
@@ -169,7 +170,7 @@ bool System::makeMove(Player* player){
     }
     std::streambuf* orig = std::cin.rdbuf();
     if(isWithGUI){
-        RealPlayer* realPlayerPtr = dynamic_cast<RealPlayer*>(player);       //second time breaking inhertiance (and final time)
+        auto realPlayerPtr = dynamic_cast<RealPlayer*>(player);       //second time breaking inhertiance (and final time)
         if (realPlayerPtr != nullptr) {             //is the current player a real player
             string actionAsString = realPlayerChooseActionGUI(sf::Vector2<float>(50,765));
             std::istringstream input(actionAsString);
@@ -207,9 +208,18 @@ bool System::makeMove(Player* player){
 
 void System::playDealerTurn() {
     const static int dealerDefaultStandValue = 17;
+    if(isWithGUI){
+        flipDealerSecondCard();
+    }
     Player* tempPtrToDealer = &dealer;
     while (dealer.getCurrentHandSum() < dealerDefaultStandValue){
+        if(isWithGUI){
+            sf::sleep(sf::seconds(1.5));
+        }
         hitAPlayer(tempPtrToDealer);
+    }
+    if(isWithGUI){
+        announce("Dealer has a sum of " + to_string(dealer.getCurrentHandSum()));
     }
 }
 
@@ -234,14 +244,14 @@ void System::playResults() {
             cout << "Player " << *player << " is tied with the dealer!" << endl;
             if(isWithGUI){
                 string announcement = "Player " + player->getName() + " is tied with the dealer!";
-                announce(announcement, 1);
+                announce(announcement, 3);
             }
         }
         else if (dealerSum > currentPlayerSum){
             cout << "Player " << *player << " has lost to the dealer!" << endl;
             if(isWithGUI){
                 string announcement = "Player " + player->getName() + " has lost to the dealer!";
-                announce(announcement, 1);
+                announce(announcement, 3);
             }
 //            continue;
         }
@@ -250,7 +260,7 @@ void System::playResults() {
             cout << "Player " << *player << " beat the dealer!" << endl;
             if(isWithGUI){
                 string announcement = "Player " + player->getName() + " beat the dealer!";
-                announce(announcement, 1);
+                announce(announcement, 3);
             }
 //            continue;
         }
@@ -270,6 +280,7 @@ void System::addPlayersToBank(){
 }
 
 void System::collectStartingBets() {
+    announce("Collecting starting bets...", 3);
     for (auto& player : PlayersVector){
         if(!player->getIsAlive()){
             continue;
@@ -364,6 +375,7 @@ void System::endRound() {
     dealer.emptyDeck();    //empty dealer card deck
     if(isWithGUI){
         manager.emptyDeck();
+        announce("Handing out chips to winners");
     }
     checkAlivenessOfPLayers();
 }
@@ -417,6 +429,8 @@ void System::createAIPlayers(int numOfPlayers) {
 
 /**Testing realted functions */
 
+
+//TODO: erase this before final version
 int System::getPlayersCurrentMoney(int numberOfPlayer) const {
     assert(numberOfPlayer > 0);
     return bank.getPlayersMoney(PlayersVector[numberOfPlayer - 1]->getName()); //One liner! :)
@@ -453,10 +467,16 @@ void System::checkAlivenessOfPLayers() {
     if (playersStillInGame == 1){
         cout << "We have a winner!! Player " << PlayersVector[0]->getName() <<" is the BlackJack Master!" << endl;
         isGameFinished = true;
+        if(isWithGUI) {
+            announce("We have a winner!! Player " + PlayersVector[0]->getName() + " is the BlackJack Master!");
+        }
         return;
     }
     if (playersStillInGame == 0){
         cout << "We have a tie! What are the odds??" << endl;
+        if(isWithGUI) {
+            announce("We have a tie! What are the odds??");
+        }
         isGameFinished = true;
         return;
     }
@@ -466,14 +486,12 @@ void System::removePlayer(Player *player) {
     for(auto it = PlayersVector.begin(); it != PlayersVector.end(); ++it){
         const string currentPlayerName= (*it)->getName();
         if (currentPlayerName == player->getName()){
-            //TODO: forshadow with gui
             bank.removePlayerFromBank(currentPlayerName);
             PlayersVector.erase(it);
             return;
         }
     }
 }
-
 
 
 

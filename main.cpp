@@ -1,16 +1,17 @@
 #include <iostream>
 #include "Cards/card.h"
 #include "System.h"
-#include <SFML/Graphics.hpp>
-#include "Cards/AceCard.h"
-#include "Cards/RoyaltyCard.h"
-#include "Cards/RegularNumCard.h"
 #include "GUImanager/Textbox.h"
 
 using namespace std;
 
 /** Functions to help set up GUI system*/
 string getPlayerSettingAsString(sf::RenderWindow& window);
+
+static const int ENTER_KEYBOARD_BUTTON = 13;
+static const int ONE_KEYBOARD_BUTTON = 49;
+static const int FIVE_KEYBOARD_BUTTON = 53;
+static const int BACKSPACE_KEY = 8;
 
 
 
@@ -30,13 +31,20 @@ int main() {
     std::cin.rdbuf(orig);
 
     while (window.isOpen()){
+
         sf::Event event;
 
         while (window.pollEvent(event)){
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        s.playRound();
+        try {
+            s.playRound();
+        }
+        catch(exception& error){
+            window.close();
+            return 0;
+        }
         window.clear();
         s.drawSetupWindow(window);
         s.drawStatsTextObjects(window);
@@ -45,13 +53,6 @@ int main() {
     }
     return 0;
 }
-//
-//int main(){
-//        System s(createRegularCardDeck(1),nullptr);
-//        while(s.playRound());
-//};
-
-
 
 
 string getPlayerSettingAsString(sf::RenderWindow& window){
@@ -81,17 +82,16 @@ string getPlayerSettingAsString(sf::RenderWindow& window){
 
     sf::Text createdBy("This game was created by Yuval Keren, feel free to copy whatever! Have fun :)", marlboro, 40);
     createdBy.setPosition(0,800);
-    
+
+    sf::Text badInput("Only numbers between 1-5 my good friend!", marlboro, 50);
+    badInput.setPosition(300, 300);
     
     /** creating text boxes */
-    Textbox textboxForNumOfPlayers;
+    Textbox textboxForNumOfPlayers(marlboro, true, 1);
     textboxForNumOfPlayers.setPosition(900, 200);
-   
-    textboxForNumOfPlayers.setFont(marlboro);
 
-    Textbox textboxForName;
-    textboxForName.setPosition(900, 200);
-    textboxForName.setFont(marlboro);
+    Textbox textboxForName(marlboro, true, 20);
+    textboxForName.setPosition(850, 200);
 
 
     bool didUserFinish = false;
@@ -105,12 +105,25 @@ string getPlayerSettingAsString(sf::RenderWindow& window){
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::TextEntered && whichStepToDo == 1){
-                if(event.text.unicode == 13){
+                auto keyPressed =event.text.unicode;
+                if(keyPressed == ENTER_KEYBOARD_BUTTON){
                     whichStepToDo = 2;
                     stringToInjectIntoCin += textboxForNumOfPlayers.getString() + "\n";  //so when doing future +=, there will be a \n between words
                     continue;
                 }
-                textboxForNumOfPlayers.typedOn(event);
+                else if  ((keyPressed >= ONE_KEYBOARD_BUTTON && keyPressed <= FIVE_KEYBOARD_BUTTON) || keyPressed == BACKSPACE_KEY  ){
+                    textboxForNumOfPlayers.typedOn(event);
+                }
+                else{
+                    window.clear();
+                    window.draw(dogsBackgroundSprite);
+                    window.draw(welcomeMessage);
+                    window.draw(createdBy);
+                    window.draw(badInput);
+                    window.display();
+                    sf::sleep(sf::seconds(1.5));
+
+                }
             }
             if (event.type == sf::Event::TextEntered && whichStepToDo == 2){
                 if(event.text.unicode == 13){

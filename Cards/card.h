@@ -19,26 +19,20 @@ private:
 
 protected:
     int value;
-    sf::Texture cardTexture;
 public:
     virtual void print(std::ostream& os) const;
     Card(int value, CardShape type) : value(value), type(type) {};
     virtual ~Card() = default;
     class intToCardTypeError;
     int getValue() const;
-    std::string getCardShapeAsString();
-
-
-
-
-    /** GUI related stuff */
-    const sf::Texture & getTexture() const;   //maybe refrence is a problem
+    std::string getCardShapeAsString() const;
+    virtual std::string getCardFullNameAsString() const = 0;
 
 };
 
 
 CardShape intToCardTypeAdapter(int value);
-std::string createStringForCardTypeSprite(Card& card);
+
 
 
 

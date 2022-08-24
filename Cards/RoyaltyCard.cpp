@@ -7,15 +7,16 @@
 
 using namespace std;
 
-void RoyaltyCard::setTexture() {
-    string cardShapeString = getCardShapeAsString();
-    string startOfFileText = "../GUIfiles/Sprites/Cards/card";
-    string cardValue = getCardTypeAsString();
-    string pngEnding = ".png";
-    string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
-    cardTexture.loadFromFile(fileName);
-
-}
+//TODO: delete this when project is ready
+//void RoyaltyCard::setTexture() {
+//    string cardShapeString = getCardShapeAsString();
+//    string startOfFileText = "../GUIfiles/Sprites/Cards/card";
+//    string cardValue = getCardTypeAsString();
+//    string pngEnding = ".png";
+//    string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
+//    cardTexture.loadFromFile(fileName);
+//
+//}
 
 std::string RoyaltyCard::getCardTypeAsString() const {
     string cardTypeString;
@@ -36,3 +37,9 @@ std::string RoyaltyCard::getCardTypeAsString() const {
     return cardTypeString;
 
 }
+
+string RoyaltyCard::getCardFullNameAsString() const {
+    return (getCardShapeAsString() + getCardTypeAsString());
+}
+
+

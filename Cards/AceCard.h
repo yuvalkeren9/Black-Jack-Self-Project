@@ -10,14 +10,12 @@
 class AceCard : public Card {
 private:
     bool is11;
-    void setTexture();
 
 
 public:
-    explicit AceCard(const CardShape& cardShape) : Card(11, cardShape), is11(true) {
-        setTexture();
-    };
+    explicit AceCard(const CardShape& cardShape) : Card(11, cardShape), is11(true) {};
     void changeAceValue();
+    std::string getCardFullNameAsString() const override;
 };
 
 

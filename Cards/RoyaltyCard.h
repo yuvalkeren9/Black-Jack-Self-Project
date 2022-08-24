@@ -11,14 +11,11 @@ enum RoyaltyType {Jack, Queen, King};
 class RoyaltyCard : public Card {
 private:
     RoyaltyType royaltyType;
-    void setTexture();
     std::string getCardTypeAsString() const;
 
 public:
-    RoyaltyCard(CardShape cardShape, RoyaltyType royaltyType) : Card(10, cardShape), royaltyType(royaltyType) {
-        setTexture();
-    };
-
+    RoyaltyCard(CardShape cardShape, RoyaltyType royaltyType) : Card(10, cardShape), royaltyType(royaltyType) {};
+    std::string getCardFullNameAsString() const override;
 };
 
 

@@ -27,7 +27,7 @@ private:
 
 public:
     Textbox();
-    Textbox(const sf::Font& font, bool hasLimit = false, int limitOfLength = 15, unsigned int fontSize = 30);
+    explicit Textbox(const sf::Font& font, bool hasLimit = false, int limitOfLength = 15, unsigned int fontSize = 30);
     void inputLogic(int charTyped);
     void setFont(const sf::Font& font);
     void setPosition(float x, float y);

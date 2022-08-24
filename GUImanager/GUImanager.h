@@ -27,6 +27,8 @@ private:
 
     sf::Sprite background;
 
+    sf::Texture dealerOriginalTexture;
+
 public:
 
     /**
@@ -60,6 +62,9 @@ public:
     void setBackground(const std::string& filePath);
     void drawBackground(sf::RenderWindow& window) const;
 
+    void setDealerOriginalCardTexture(const sf::Texture& cardTexture);
+    const sf::Texture& getDealerOriginalCardTexture() const;
+
 
     /**Players related functions*/
     void addPlayer(const std::string& playerName, float x, float y);
@@ -74,7 +79,6 @@ public:
 
 
     void emptyDeck();
-    void updateStatsObjects();
 };
 
 
