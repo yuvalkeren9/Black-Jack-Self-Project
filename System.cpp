@@ -36,7 +36,6 @@ queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks){
     for (int i=0; i < numOfDecks; ++i){                 //creating the 2-10 regular cards
         for(int j=smallestCardValue; j <= largestCardValue; ++j){
             for (int p = 1; p <= differentCardTypes; ++p) {
-//                tempVector.push_back(make_unique<Card> (j, intToCardTypeAdapter(p)));
                 tempVector.push_back(unique_ptr<Card> (new RegularNumCard(j, intToCardTypeAdapter(p))));
             }
         }               //the royal house is seperated from the regular cards because I wanted to experiment with make unique
@@ -98,7 +97,6 @@ bool System::playRound() {
     dealStartingCards();
     printPlayerHands();
     collectStartingBets();
-    //checkIfPlayersWantToDoubleDown();
     printBankDetails();
     if(checkDealerForNaturalBlackJack()){
         endRound();
@@ -253,7 +251,6 @@ void System::playResults() {
                 string announcement = "Player " + player->getName() + " has lost to the dealer!";
                 announce(announcement, 3);
             }
-//            continue;
         }
         else{                                     //player's sum is higher than dealer's
             processBet(currentPlayerName, regular);
@@ -262,7 +259,6 @@ void System::playResults() {
                 string announcement = "Player " + player->getName() + " beat the dealer!";
                 announce(announcement, 3);
             }
-//            continue;
         }
 
         if(isWithGUI) {
@@ -303,23 +299,6 @@ void System::collectStartingBets() {
     }
 }
 
-void System::checkIfPlayersWantToDoubleDown() {
-    //TODO: this function, for real
-    for (auto& player : PlayersVector){
-        int currentPlayersMoney = bank.getPlayersMoney(player->getName());
-        const string currentPlayerName = player->getName();
-        assert(currentPlayersMoney != 0);
-        if(currentPlayersMoney < startingBet){
-            currentRoundBetsMap[currentPlayerName] = currentPlayersMoney;
-            bank.decreaseMoney(currentPlayerName, currentPlayersMoney);
-        }
-        else{
-            currentRoundBetsMap[currentPlayerName] = startingBet;
-            bank.decreaseMoney(currentPlayerName, startingBet);
-        }
-    }
-
-}
 
 void System::processBet(const string& playerName, BetType betType ){
     int originalBet = currentRoundBetsMap.at(playerName);
@@ -411,7 +390,7 @@ void System::createAIPlayers(int numOfPlayers) {
     for (int i=1 ; i < numOfPlayers; ++i){
         string playerName = vectorOfPossibleNames[i];
         if(PlayersVector[0]->getName() == playerName){ //checking that the Real player didn't use one of the names here.
-            playerName = vectorOfPossibleNames.at(i+numOfPlayers); //If the player did pick a name, pick a different one outside the picking scope
+            playerName = vectorOfPossibleNames.at(i+numOfPlayers); //If the player did pick a name, pick a different one outside the picking scope==
         }
         sf::Vector2<float> playerLocation = calculateWhereToLocatePlayer(i);
         manager.addPlayer(playerName, playerLocation);
@@ -430,20 +409,12 @@ void System::createAIPlayers(int numOfPlayers) {
 /**Testing realted functions */
 
 
-//TODO: erase this before final version
-int System::getPlayersCurrentMoney(int numberOfPlayer) const {
-    assert(numberOfPlayer > 0);
-    return bank.getPlayersMoney(PlayersVector[numberOfPlayer - 1]->getName()); //One liner! :)
-}
-
 void System::printPlayerHands() const {
     for(const auto& player : this->PlayersVector){
         cout << "Player: " << *player << endl;
-        //player->printHand();
         cout << "The sum of the player is:" << player->getCurrentHandSum() << endl << endl;
     }
     cout << "Player: " << dealer << endl;
-    //dealer.printHand();
     cout << "The sum of the dealer is:" << dealer.getCurrentHandSum() << endl << endl;
 }
 
@@ -492,7 +463,3 @@ void System::removePlayer(Player *player) {
         }
     }
 }
-
-
-
-

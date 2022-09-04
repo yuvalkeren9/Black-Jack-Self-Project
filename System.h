@@ -153,10 +153,6 @@ private:
     void endOfRoundPlayerBust(const std::string& playerName);
 
 
-
-
-    void checkIfPlayersWantToDoubleDown();
-
     /**
      * Function that process a bet. Function communicates with the system bank.
      * @param playerName - the player to process has bank
@@ -189,39 +185,109 @@ public:
 
 
     /**GUI related stuff */
+
+    /**
+     * Function that is responsible for creating the players and their stats GUI objects, background and texts
+     */
     void setGameWindow();
+    /**
+     * Drawing the above objects to a window
+     * @param window
+     */
     void drawSetupWindow(sf::RenderWindow& window) const;
+
+    /**
+     * Helper function for setGameWindow. Creates AI GUI objects
+     *
+     * @param numOfAIPlayers how many AI players to create
+     */
+
+    /**
+     * Helper function for setGameWindow. Creates AI GUI text objects
+     * @param numOfAIPlayers how many AI player texts to create
+     */
     void createAIPlayerTextObjects(int numOfAIPlayers);
+
+    /**
+     * Helper function for setGameWindow. Creates GUI stat objects
+     */
     void createGameStatObjects();
+
+    /**
+     * Function that draws the GUI stats objects to the screen
+     * @param window - which window to draw to
+     */
     void drawStatsTextObjects(sf::RenderWindow& window) const;
+    /**
+     *
+     * @param window
+     */
+
+    /**
+     * Helper function that draws the location of each player. Helpful if a developer wants to add new features.
+     * @param window the window to draw into
+     */
     void drawPlayerLocations(sf::RenderWindow& window) const;
+
+    /**
+     * Animating the dealing of a card to a player
+     * @param player the player to deal to
+     * @param card the card to deal
+     */
     void hitAPlayerGUI(Player* player, Card* card);
+
+    /**
+     * A helper function for the above function. This function does the actual animating, using specific coordinates.
+     * @param startingPosition - where to start from
+     * @param endingPosition - where to deliver card
+     * @param cardSprite - sprite of the card to deal
+     * @param window - which window to show the animation on
+     */
     void animateCardDealt(const sf::Vector2<float> startingPosition, const sf::Vector2<float> endingPosition,
                           sf::Sprite& cardSprite, sf::RenderWindow& window) const;
+    /**
+     * Function that creates the button on the screen that allow the player to choose an action
+     * @param positionToLocateButtons - position the locate the buttons on
+     * @return
+     */
     std::string realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButtons);
+
+    /**
+     * Function the shows an announcement on the screen
+     * @param announcement - which string to show
+     * @param delay - how long the announcement should stick on the screen
+     */
     void announce(const std::string &announcement, float delay = 3);
+
+    /**
+     * Function responisble for rendering most of the basic GUI to a selected window
+     * @param window - window to render to
+     */
     void render(sf::RenderWindow& window) const;
+
+    /**
+     * Function that creates a texture for a card according to its type
+     * @param card the card to create a texture for
+     */
     void createCardTexture(Card*& card);
-
-    void updateScreen() const;
-
 
    /**
     * Function that loads files that the system will repeatedly use. To be used when setting up the game.
     */
     void loadFiles();
 
+    /**
+     * Function that animates flipping the dealer's second card
+     */
+    void flipDealerSecondCard();
 
-
-    //for testing
+    /**
+     * Functions that are used for testing backend
+     */
     void printPlayerHands() const;
     void printBankDetails() const;
-    int getPlayersCurrentMoney(int numberOfPlayer) const;
 
-    void flipDealerSecondCard();
 };
-
-
 
 /**
  * Function that generates a regular card deck.
@@ -230,6 +296,7 @@ public:
  */
 std::queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
 
+
 /**
  * Function that calculates where to locate AI players on the window
  * @param AI player to locate
@@ -237,8 +304,20 @@ std::queue<std::unique_ptr<Card>> createRegularCardDeck(int numOfDecks);
  */
 sf::Vector2<float> calculateWhereToLocatePlayer(int i);
 
+
+/**
+ * Helper function for hitAPlayerGUI. Calculates where to deal a card to
+ * @param startingPosition - where the card will start his movement from
+ * @param cardSprite - the Sprite of the card
+ * @param numberOfCardsInPlayerHand - how many cards already in player's hand
+ * @param sizeOfCardDivisionOffset  - an offset to be used according to developers taste
+ * @param isAI - is the player an AI
+ * @return
+ */
 sf::Vector2<float> calculateWhereToDealCard(const sf::Vector2<float>& startingPosition, const sf::Sprite& cardSprite,
                                             int numberOfCardsInPlayerHand, float sizeOfCardDivisionOffset, bool isAI );
+
+
 
 
 #endif //CARDGAME_SYSTEM_H

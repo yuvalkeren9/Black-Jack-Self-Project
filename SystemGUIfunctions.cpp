@@ -98,7 +98,7 @@ void System::drawSetupWindow(sf::RenderWindow& window) const {
     manager.drawSetupTextObjects(window);
 }
 
-//TODO: can simplify this. Do this when project is done and needs to look more neat.
+
 void System::createGameStatObjects() {
     const int realPlayerTextOffset = 50;
     const int AIplayersTextOffset = 20;
@@ -106,7 +106,6 @@ void System::createGameStatObjects() {
     sf::Text currentSumText(to_string(PlayersVector[0]->getCurrentHandSum()), marlboroFont, 30);
     auto &playerNameTextHeader = manager.getTextSetupObject("playerCurrentSumOfHandHeaderText");
 
-//TODO: make this normal
     auto playerNameTextHeaderGlobalPosition = playerNameTextHeader.getGlobalBounds();
     auto playerNameTextHeaderLocalPosition = playerNameTextHeader.getLocalBounds();
     currentSumText.setPosition(playerNameTextHeaderGlobalPosition.left + playerNameTextHeaderGlobalPosition.width + realPlayerTextOffset,
@@ -178,7 +177,6 @@ int System::getNumberOfDesiredPlayers() const {
     if(!isWithGUI){
         cout << "Enter number of players (1-5)" << endl;
     }
-    //TODO: check for valid input
     getline(cin, temp);
     return stoi(temp);
 }
@@ -231,7 +229,6 @@ void System::loadFiles(){
 
 
 
-//TODO: make this a global function (maybe)
 void System::animateCardDealt(const sf::Vector2<float> startingPosition, const sf::Vector2<float> endingPosition, sf::Sprite& cardSprite, sf::RenderWindow& window) const {
     cardSprite.setPosition(startingPosition);
     float xDistance = endingPosition.x - startingPosition.x;
@@ -403,14 +400,6 @@ void System::createCardTexture(Card *&card) {
     sf::Texture cardTexture;
     cardTexture.loadFromFile("C:/Program Files/clionprojects/cardgame/GUIfiles/Sprites/Cards/card" + card->getCardFullNameAsString()+".png");
     manager.addTexture(card->getCardFullNameAsString(), cardTexture);
-}
-
-
-//TODO: remove before final version
-void System::updateScreen() const {
-    windowUsed->clear();
-    render(*windowUsed);
-    windowUsed->display();
 }
 
 

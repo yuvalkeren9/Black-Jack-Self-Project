@@ -5,7 +5,7 @@
 
 using namespace std;
 
-/** Functions to help set up GUI system*/
+/** Function to help set up GUI system*/
 string getPlayerSettingAsString(sf::RenderWindow& window);
 
 static const int ENTER_KEYBOARD_BUTTON = 13;
@@ -48,13 +48,15 @@ int main() {
         window.clear();
         s.drawSetupWindow(window);
         s.drawStatsTextObjects(window);
-        s.drawPlayerLocations(window);
         window.display();
     }
     return 0;
 }
 
 
+
+
+/** Function that is responsible for the setup menu*/
 string getPlayerSettingAsString(sf::RenderWindow& window){
     /** loading background*/
     sf::Texture dogsBackground;
@@ -133,7 +135,6 @@ string getPlayerSettingAsString(sf::RenderWindow& window){
                 }
                 textboxForName.typedOn(event);
             }
-            //TODO: only when a valid string was entered
         }
 
         /** drawing */
@@ -151,7 +152,7 @@ string getPlayerSettingAsString(sf::RenderWindow& window){
                 textboxForName.drawTo(window);
                 break;
             default:
-                cout << "Bug in setUp window";
+                cout << "Bug in setup window";
                 break;
         }
         window.display();
