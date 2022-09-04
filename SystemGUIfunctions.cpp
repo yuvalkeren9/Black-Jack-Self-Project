@@ -379,6 +379,9 @@ string System::realPlayerChooseActionGUI(sf::Vector2<float> positionToLocateButt
 }
 
 void System::announce(const string &announcement, float delay) {
+    if(!isWithGUI){
+        return;
+    }
     const sf::Font& marlboro = manager.getFont("marlboroFont");
     sf::Text text(announcement,marlboro, 30);
     text.setOrigin(text.getGlobalBounds().width/2, text.getGlobalBounds().height/2);

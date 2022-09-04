@@ -84,7 +84,6 @@ void System::dealStartingCards() {
         Player* tempDealerPtr = &dealer;
         hitAPlayer(tempDealerPtr);
     }
-
 }
 
 void System::moveFirstCardToEndOfDeck() {
@@ -364,8 +363,8 @@ void System::createPlayers(int numOfPlayers) {
     createRealPlayer();
     createAIPlayers(numOfPlayers);
     //adding dealer to manager
-    manager.addPlayer("Dealer", 250, 80);
-    if(isGameFinished) {
+    if(isWithGUI) {
+        manager.addPlayer("Dealer", 250, 80);
         windowUsed->clear();
         render(*windowUsed);
         windowUsed->display();
@@ -378,7 +377,8 @@ void System::createRealPlayer() {
         cout << "Please select a name:" << endl;
     }
     getline(cin, inputFromUser);
-    manager.addPlayer(inputFromUser, 250, 550);
+    if(isWithGUI)
+        manager.addPlayer(inputFromUser, 250, 550);
     PlayersVector.push_back(unique_ptr<Player> (new RealPlayer(inputFromUser)));
 }
 
@@ -392,8 +392,10 @@ void System::createAIPlayers(int numOfPlayers) {
         if(PlayersVector[0]->getName() == playerName){ //checking that the Real player didn't use one of the names here.
             playerName = vectorOfPossibleNames.at(i+numOfPlayers); //If the player did pick a name, pick a different one outside the picking scope==
         }
-        sf::Vector2<float> playerLocation = calculateWhereToLocatePlayer(i);
-        manager.addPlayer(playerName, playerLocation);
+        if(isWithGUI) {
+            sf::Vector2<float> playerLocation = calculateWhereToLocatePlayer(i);
+            manager.addPlayer(playerName, playerLocation);
+        }
         PlayersVector.push_back(unique_ptr<Player> (new AIPlayer(playerName)));
     }
 }
@@ -462,4 +464,9 @@ void System::removePlayer(Player *player) {
             return;
         }
     }
+}
+
+int System::getPlayersCurrentMoney(int numberOfPlayer) const {
+    assert(numberOfPlayer > 0);
+    return bank.getPlayersMoney(PlayersVector[numberOfPlayer - 1]->getName()); //One liner! :)
 }
