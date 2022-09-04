@@ -11,8 +11,6 @@ class AIPlayer : public Player{
 public:
     explicit AIPlayer(std::string name, long int startingMoney = 1000) : Player(std::move(name)){};
     Action chooseAction() const override;
-
-
 };
 
 
