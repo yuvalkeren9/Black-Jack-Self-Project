@@ -14,7 +14,6 @@ void Textbox::inputLogic(int charTyped) {
             deleteLastChar();
     }
     else if(charTyped == ENTER_KEY){
-        //TODO: complete the string, exit textbox
         return;
     }
     else{

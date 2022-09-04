@@ -23,16 +23,15 @@ void Bank::addMoney(const std::string &playerName, int moneyToAdd) {
 }
 
 void Bank::addPlayerToBank(const std::string &playerName, int moneyToInit) {
-    try{
-        while(true) {
-            listOfParticipants.at(playerName);
-            //TODO: make this orthogonal
-            cout << "Player name already in use." << endl;
-        }
+    try {
+        listOfParticipants.at(playerName);
     }
     catch (const std::out_of_range& e){
         listOfParticipants[playerName] += moneyToInit;
+        return;
     }
+    cout << "Player name already in use." << endl;
+    throw logic_error("Player name already in use.");
 }
 
 void Bank::decreaseMoney(const std::string &playerName, int moneyToADecrease) {

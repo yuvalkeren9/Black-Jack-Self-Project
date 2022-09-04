@@ -55,19 +55,8 @@ string Card::getCardShapeAsString() const {
             cardShapeString = "Spades";
             break;
         default:
-            cout << "Shit I messed something up" << endl;
+            cout << "Damn I messed something up" << endl;
             break;
     }
     return cardShapeString;
 }
-
-//TODO: remove before final version
-//string createStringForCardTypeSprite(Card& card){
-//    string cardShapeString = card.getCardShapeAsString();
-//    string startOfFileText = "../Sprites/Cards/card";
-//    string cardValue = to_string(card.getValue());
-//    string pngEnding = ".png";
-//    return (startOfFileText + cardShapeString + cardValue + pngEnding);
-//}
-//
-

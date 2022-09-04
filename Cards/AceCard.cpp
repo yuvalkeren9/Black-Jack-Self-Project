@@ -25,18 +25,6 @@ void AceCard::changeAceValue() {
     }
 }
 
-
-//TODO: delete when project is ready
-//void AceCard::setTexture() {
-//    string cardShapeString = getCardShapeAsString();
-//    string startOfFileText = "../GUIfiles/Sprites/Cards/card";
-//    string cardValue = "A";
-//    string pngEnding = ".png";
-//    string fileName = (startOfFileText + cardShapeString + cardValue + pngEnding);
-//    cardTexture.loadFromFile(fileName);
-//
-//}
-
 string AceCard::getCardFullNameAsString() const {
     return (getCardShapeAsString() + "A");
 
